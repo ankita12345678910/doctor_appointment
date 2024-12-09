@@ -1,0 +1,23 @@
+# Python bytecode files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.swp
+
+# # Django migrations
+# */migrations/
+
+# Environment variables (do not commit the .env file)
+# .env
+
+# IDEs and editors
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Static and media files
+# /static/
+# **/static/
+**/media/

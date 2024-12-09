@@ -1,0 +1,207 @@
+{% extends 'base.html' %}
+
+{% block title %}
+{{ block.super }} - Book New Appointment
+{% endblock %}
+
+{% block stylesheets %}
+{{ block.super }}
+<link rel="stylesheet" href="https://code.jquery.com/ui/1.14.1/themes/base/jquery-ui.css">
+{% endblock %}
+
+{% block content %}
+{% load static %}
+
+<section class="h-100 bg-white">
+    <div class="container h-100 shadow-lg">
+        <div class="row d-flex justify-content-center align-items-center h-100">
+            <div class="col">
+                <div class="card card-registration my-4">
+                    <div class="row g-0">
+                        <div class="col-xl-6 d-none d-xl-block">
+                            <img src="{% static 'images/download.jpg' %}" alt="Sample photo" class="img-fluid"
+                                id="form_image" style="height:100%" />
+                        </div>
+                        <div class="col-xl-6">
+                            <div class="card-body p-md-5 text-black bg-white">
+                                <h3 class="mb-5 text-uppercase">Book New Appointment</h3>
+                                <form action="" method="post">
+                                    {% csrf_token %}
+                                    <div data-mdb-input-init class="form-outline mb-4">
+                                        <select data-mdb-select-init class="form-control form-control-lg" name="doctor">
+                                            <option value="{{ user.id }}" selected>{{ user.first_name }}
+                                                {{user.last_name }}</option>
+                                        </select>
+                                        <label class="form-label" for="form3Example8">Doctor name <span
+                                                style="color: red;">*</span></label>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-md-6 mb-4">
+                                            <div data-mdb-input-init class="form-outline">
+                                                <input type="text" id="datepicker" class="form-control form-control-lg"
+                                                    name="appointment_date" required="true" />
+                                                <label class="form-label" for="datepicker">Appointment date
+                                                    <span style="color: red;">*</span></label>
+                                                <p style="display:none;">Format options:<br>
+                                                    <select id="format">
+                                                        <option value="mm/dd/yy">Default - mm/dd/yy</option>
+                                                        <option value="yy-mm-dd">ISO 8601 - yy-mm-dd</option>
+                                                        <option value="d M, y">Short - d M, y</option>
+                                                        <option value="d MM, y">Medium - d MM, y</option>
+                                                        <option value="DD, d MM, yy">Full - DD, d MM, yy</option>
+                                                        <option value="'day' d 'of' MM 'in the year' yy">With text -
+                                                            'day' d 'of' MM 'in the year' yy</option>
+                                                    </select>
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6 mb-4">
+                                            <div data-mdb-input-init class="form-outline">
+                                                <select data-mdb-select-init class="form-control form-control-lg"
+                                                    name="appointment_time">
+                                                    <option value="">-select-</option>
+                                                    <option value="11:00 AM">11.00 AM</option>
+                                                    <option value="11:00 AM">12.00 AM</option>
+                                                </select>
+                                                <label class="form-label" for="form3Example1n1">Appointment time
+                                                    <span style="color: red;">*</span></label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-6 mb-4">
+                                            <select data-mdb-select-init class="form-control form-control-lg"
+                                                name="patient_type" id="js_patient_type">
+                                                <option value="">-select-</option>
+                                                <option value="new">New</option>
+                                                <option value="old">Old</option>
+                                            </select>
+                                            <label class="form-label" for="">Patient Type <span
+                                                    style="color: red;">*</span></label>
+                                        </div>
+                                        <div class="col-md-6 mb-4">
+
+                                            <div data-mdb-input-init class="form-outline" id="patient_email">
+                                                <input type="email" id="form3Example1m"
+                                                    class="form-control form-control-lg" name="email" />
+                                                <label class="form-label" for="form3Example1m">Email <span
+                                                        style="color: red;">*</span></label>
+                                            </div>
+
+                                            <div data-mdb-input-init class="form-outline" id="patient_id"
+                                                style="display: none;">
+                                                <input type="text" id="form3Example1m"
+                                                    class="form-control form-control-lg" name="patient_id" />
+                                                <label class="form-label" for="form3Example1m">Patient_id<span
+                                                        style="color: red;">*</span></label>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                    <div id="new_patient">
+                                        <div class="row">
+                                            <div class="col-md-6 mb-4">
+                                                <div data-mdb-input-init class="form-outline">
+                                                    <input type="text" id="form3Example1m"
+                                                        class="form-control form-control-lg"
+                                                        name="patient_first_name" />
+                                                    <label class="form-label" for="form3Example1m">Patient first
+                                                        name <span style="color: red;">*</span></label>
+                                                </div>
+                                            </div>
+
+                                            <div class="col-md-6 mb-4">
+                                                <div data-mdb-input-init class="form-outline">
+                                                    <input type="text" id="form3Example1n"
+                                                        class="form-control form-control-lg" name="patient_last_name" />
+                                                    <label class="form-label" for="form3Example1n">Patient last name
+                                                        <span style="color: red;">*</span></label>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="row">
+                                            <div class="col-md-6 mb-4">
+                                                <select data-mdb-select-init class="form-control form-control-lg"
+                                                    name="gender">
+                                                    <option value="">-select-</option>
+                                                    <option value="male">Male</option>
+                                                    <option value="female">Female</option>
+                                                    <option value="others">Others</option>
+                                                </select>
+                                                <label class="form-label" for="">Gender <span
+                                                        style="color: red;">*</span></label>
+                                            </div>
+                                            <div class="col-md-6 mb-4">
+                                                <input type="text" id="form3Example99"
+                                                    class="form-control form-control-lg" name="age" />
+                                                <label class="form-label" for="form3Example99">Age <span
+                                                        style="color: red;">*</span></label>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-6 mb-4">
+                                                <div data-mdb-input-init class="form-outline">
+                                                    <input type="text" id="form3Example90"
+                                                        class="form-control form-control-lg" name="guardian_name" />
+                                                    <label class="form-label" for="form3Example90">Guardian Name <span
+                                                            style="color: red;">*</span></label>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6 mb-4">
+                                                <div data-mdb-input-init class="form-outline">
+                                                    <input type="text" id="form3Example97"
+                                                        class="form-control form-control-lg" name="mobile_number" />
+                                                    <label class="form-label" for="form3Example97">Mobile Number <span
+                                                            style="color: red;">*</span></label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div data-mdb-input-init class="form-outline mb-4">
+                                            <input type="text" id="form3Example8" class="form-control form-control-lg"
+                                                name="address" style="height: 50px; resize: vertical;" />
+                                            <label class="form-label" for="form3Example8">Address <span
+                                                    style="color: red;">*</span></label>
+                                        </div>
+                                    </div>
+                                    <!-- More form fields here -->
+                                    <div class="d-flex justify-content-end">
+                                        <button type="submit" class="btn btn-warning btn-lg ms-2">Book</button>
+                                    </div>
+                            </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block javascript %}
+{{ block.super }}
+<script src="https://code.jquery.com/jquery-3.7.1.js"></script>
+<script src="https://code.jquery.com/ui/1.14.1/jquery-ui.js"></script>
+<script>
+    $(function () {
+        $("#datepicker").datepicker();
+        $("#format").on("change", function () {
+            $("#datepicker").datepicker("option", "dateFormat", $(this).val());
+        });
+    });
+    $('body').on('change', '#js_patient_type', function () {
+        if ($(this).val() == 'old') {
+            $('#new_patient').css({ 'display': 'none' })
+            $('#patient_email').css({ 'display': 'none' })
+            $('#patient_id').css({ 'display': 'block' })
+        } else {
+            $('#new_patient').css({ 'display': 'block' })
+            $('#patient_email').css({ 'display': 'block' })
+            $('#patient_id').css({ 'display': 'none' })
+        }
+    })
+</script>
+{% endblock %}
