@@ -1,13 +1,35 @@
 from django.shortcuts import render,redirect
 from django.contrib.auth.models import User
+from django.contrib.auth import authenticate, login
 from django.db import connection
 from .models import Appointment
 import uuid
 from django.http import HttpResponse
 from datetime import datetime
+from django.contrib.auth.decorators import login_required
 
 def homePage(request):
     return render(request,"home/index.html")
+
+def login_view(request):
+    if request.method == 'POST':
+        email=request.POST.get('email')
+        password=request.POST.get('password')
+        role='doctor'
+        doctor_user=User.objects.raw('Select * from auth_user where role=%s and username=%s',[role,email])[0]
+        user=authenticate(request,username=email,password=password)
+        if doctor_user is not None and user is not None:
+            login(request, user)
+            return redirect('doctor_dashboard')
+        else:
+            error="Only a doctor can login"
+            return render(request, 'login/login.html', {'error': error})
+       
+    return render(request,"login.html")
+
+@login_required 
+def doctor_dashboard(request):
+    return render(request, 'doctor/doctor_dashboard.html')
 
 def myView(request):
     user = User.objects.filter(id=1).first()
