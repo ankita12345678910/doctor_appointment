@@ -1,8 +1,9 @@
 from django.shortcuts import render,redirect
 from django.contrib.auth.models import User
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login,logout
 from django.db import connection
 from .models import Appointment
+from .models import DoctorSchedule
 import uuid
 from django.http import HttpResponse
 from datetime import datetime
@@ -30,6 +31,10 @@ def login_view(request):
 @login_required 
 def doctor_dashboard(request):
     return render(request, 'doctor/doctor_dashboard.html')
+
+def logout_user(request):
+    logout(request)
+    return redirect('home')
 
 def myView(request):
     user = User.objects.filter(id=1).first()
@@ -90,3 +95,17 @@ def create_user(request):
     return render(request, 'user/book_new_appointment.html',{
         'user':user_id
     })
+    
+def manageSchedule(request):
+    if request.method=='POST':
+        schedule_date=request.POST.get('date')
+        start_date=request.POST.get('starTtime')
+        end_date=request.POST.get('endTime')
+        if schedule_date and start_date and end_date:
+            schedule=DoctorSchedule.objects.create(
+                date=schedule_date,
+                start_time=start_date,
+                end_time=end_date,
+                doctor=request.user
+            )
+    return render(request,'doctor/manage_schedule.html')

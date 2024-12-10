@@ -1,0 +1,56 @@
+{% extends 'doctor_base.html' %}
+
+{% block title %}
+    {{ block.super }} - Doctor Dashboard
+{% endblock %}
+
+{% block content %}
+    {% load static %}
+    <div class="container py-5">
+        <h2 class="text-center mb-4 text-dark">Add New Schedule</h2>
+        <div class="row justify-content-center">
+            <div class="col-md-8 col-lg-6">
+                <!-- Card for the form -->
+                <div class="card shadow-lg rounded-lg p-4">
+                    <form action="" method="post">
+                        {% csrf_token %}
+                        
+                        <!-- Scheduled Date -->
+                        <div class="mb-4">
+                            <label for="appointment_date" class="form-label text-secondary">Scheduled Date</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-calendar-alt"></i></span>
+                                <input type="date" name="date" class="form-control" id="appointment_date" required>
+                            </div>
+                        </div>
+
+                        <!-- Start Time -->
+                        <div class="mb-4">
+                            <label for="start_time" class="form-label text-secondary">Start Time</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-clock"></i></span>
+                                <input type="time" name="starTtime" class="form-control" id="start_time" required>
+                            </div>
+                        </div>
+
+                        <!-- End Time -->
+                        <div class="mb-4">
+                            <label for="end_time" class="form-label text-secondary">End Time</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-clock"></i></span>
+                                <input type="time" name="endTime" class="form-control" id="end_time" required>
+                            </div>
+                        </div>
+
+                        <!-- Submit Button -->
+                        <button type="submit" class="btn btn-success btn-lg w-100 mt-3 shadow-sm hover-zoom">Add Schedule</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block footer %}
+    {{ block.super }}
+{% endblock %}

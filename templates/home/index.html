@@ -1,18 +1,132 @@
 {% extends 'base.html' %}
 
 {% block title %}
-{{ block.super }} - Book New Appointment
+{{ block.super }} - Home
 {% endblock %}
 
 {% block stylesheets %}
 {{ block.super }}
+<link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet">
 {% endblock %}
 
 {% block content %}
 {% load static %}
-<h1>Hello World</h1>
-{% endblock %}
+<!-- Hero Section -->
+<section class="bg-primary text-white text-center py-5"
+    style="background-image: url('{% static 'images/bg1.jpg' %}'); background-size: cover; background-position: center;">
+    <div class="container">
+        <h1 class="display-4 animate__animated animate__fadeInDown">Welcome to DocAppointment</h1>
+        <p class="lead animate__animated animate__fadeInUp">Book your appointments with ease and efficiency</p>
+        <a href="{% url 'book_appointment' %}"
+            class="btn btn-light btn-lg mt-4 animate__animated animate__zoomIn animate__delay-1s">Book an
+            Appointment</a>
+    </div>
+</section>
 
+<!-- Services Section -->
+<section class="py-5">
+    <div>
+        <div class="row text-center">
+            <div class="col-md-4 mb-4">
+                <div class="card shadow-sm h-100 animate__animated animate__fadeInLeft">
+                    <img src="{% static 'images/img3.jpg' %}" class="card-img-top" alt="Easy Scheduling"
+                        style="height: 300px;">
+                    <div class="card-body">
+                        <i class="fas fa-calendar-alt fa-3x text-primary mb-3"></i>
+                        <h5 class="card-title">Easy Scheduling</h5>
+                        <p class="card-text">Schedule appointments with our easy-to-use booking system.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="card shadow-sm h-100 animate__animated animate__fadeInUp">
+                    <img src="{% static 'images/img2.jpg' %}" class="card-img-top" alt="Qualified Doctors"
+                        style="height: 300px;">
+                    <div class="card-body">
+                        <i class="fas fa-user-md fa-3x text-success mb-3"></i>
+                        <h5 class="card-title">Qualified Doctors</h5>
+                        <p class="card-text">Our doctors are highly qualified and experienced in their fields.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="card shadow-sm h-100 animate__animated animate__fadeInRight">
+                    <img src="{% static 'images/img1.jpg' %}" class="card-img-top" alt="Secure and Private"
+                        style="height: 300px;">
+                    <div class="card-body">
+                        <i class="fas fa-lock fa-3x text-info mb-3"></i>
+                        <h5 class="card-title">Secure and Private</h5>
+                        <p class="card-text">Your personal information is safe with us.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Testimonials Section -->
+<section class="bg-light py-1">
+    <div>
+        <div class="text-center mb-5">
+            <h2 class="display-5 animate__animated animate__fadeInDown">What Our Patients Say</h2>
+        </div>
+        <div class="row text-center">
+            <div class="col-md-4 mb-4">
+                <div class="card shadow-sm animate__animated animate__fadeInLeft">
+                    <img src="{% static 'images/img4.jpg' %}" class="card-img-top" alt="Patient Testimonial"
+                        style="height: 275px;">
+                    <div class="card-body">
+                        <blockquote class="blockquote mb-0">
+                            <p>"The booking process was so easy and convenient. Highly recommend DocAppointment!"</p>
+                            <footer class="blockquote-footer">Jane Doe</footer>
+                        </blockquote>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="card shadow-sm animate__animated animate__fadeInUp">
+                    <img src="{% static 'images/img5.jpg' %}" class="card-img-top" alt="Patient Testimonial"
+                        style="height: 300px;">
+                    <div class="card-body">
+                        <blockquote class="blockquote mb-0">
+                            <p>"Professional and friendly doctors. My experience was top-notch."</p>
+                            <footer class="blockquote-footer">John Smith</footer>
+                        </blockquote>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="card shadow-sm animate__animated animate__fadeInRight">
+                    <img src="{% static 'images/img6.jpg' %}" class="card-img-top" alt="Patient Testimonial"
+                        style="height: 300px;">
+                    <div class="card-body">
+                        <blockquote class="blockquote mb-0">
+                            <p>"Safe and secure. I felt very comfortable sharing my information."</p>
+                            <footer class="blockquote-footer">Emily Johnson</footer>
+                        </blockquote>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Call to Action Section -->
+<section class="py-5 text-center bg-secondary text-white">
+    <div class="container">
+        <h2 class="display-5 animate__animated animate__fadeInUp">Ready to Book Your Appointment?</h2>
+        <a href="{% url 'book_appointment' %}"
+            class="btn btn-primary btn-lg mt-3 animate__animated animate__pulse animate__infinite">Get Started</a>
+    </div>
+</section>
+
+<!-- Footer Section -->
+
+{% endblock %}
+{% block footer %}
+{{ block.super }}
+{% endblock %}
 {% block javascript %}
 {{ block.super }}
+<script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
 {% endblock %}
