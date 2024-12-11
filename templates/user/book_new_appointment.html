@@ -35,7 +35,11 @@
                                         <label class="form-label" for="form3Example8">Doctor name <span
                                                 style="color: red;">*</span></label>
                                     </div>
-
+                                    <select name="" id="available_schedule_date" style="display: none;">
+                                        {% for records in doctor_schedule %}
+                                        <option value="{{records.id}}">{{records.date|date:'Y-m-d'}}</option>
+                                        {% endfor %}
+                                    </select>
                                     <div class="row">
                                         <div class="col-md-6 mb-4">
                                             <div data-mdb-input-init class="form-outline">
@@ -61,8 +65,6 @@
                                                 <select data-mdb-select-init class="form-control form-control-lg"
                                                     name="appointment_time">
                                                     <option value="">-select-</option>
-                                                    <option value="11:00 AM">11.00 AM</option>
-                                                    <option value="11:00 AM">12.00 AM</option>
                                                 </select>
                                                 <label class="form-label" for="form3Example1n1">Appointment time
                                                     <span style="color: red;">*</span></label>
@@ -187,7 +189,25 @@
 <script src="https://code.jquery.com/ui/1.14.1/jquery-ui.js"></script>
 <script>
     $(function () {
-        $("#datepicker").datepicker();
+        $("#datepicker").datepicker({
+            beforeShowDay: function (date) {
+                var enabledDates = [];
+                $('#available_schedule_date option').each(function () {
+                    var optionText = $(this).text();
+                    enabledDates.push(new Date(optionText))
+                });
+                // Check if the current date is in the list of enabled dates
+                for (var i = 0; i < enabledDates.length; i++) {
+                    if (date.getFullYear() === enabledDates[i].getFullYear() &&
+                        date.getMonth() === enabledDates[i].getMonth() &&
+                        date.getDate() === enabledDates[i].getDate()) {
+                        return [true, ""];  // Enable this date
+                    }
+                }
+
+                return [false, ""];  // Disable other dates
+            }
+        });
         $("#format").on("change", function () {
             $("#datepicker").datepicker("option", "dateFormat", $(this).val());
         });

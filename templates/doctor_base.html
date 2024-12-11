@@ -16,9 +16,9 @@
 
 <body>
     <!-- Navbar Section -->
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <nav class="navbar navbar-expand-lg navbar-light bg-light ">
         <div class="container-fluid">
-            <a class="navbar-brand" href="#">Doctor's Dashboard</a>
+            <!-- <a class="navbar-brand" href="#">Doctor's Dashboard</a> -->
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
                 aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
@@ -26,7 +26,8 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item">
-                        <a class="nav-link active" aria-current="page" href="{% url 'home' %}"><i class="fas fa-home me-2"></i></a>
+                        <a class="nav-link active" aria-current="page" href="{% url 'home' %}"><i
+                                class="fas fa-home me-2"></i></a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link link-dark" href="#"><i class="fas fa-envelope me-2"></i></a>
@@ -63,7 +64,7 @@
 
     <div class="d-flex">
         <!-- Sidebar Section -->
-        <div class="flex-shrink-0 p-3 bg-light" style="width: 250px; height: 100vh;">
+        <div class="flex-shrink-0 p-3 bg-light shadow-lg" style="width: 250px; height: 100vh;">
             <a href="/" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto link-dark text-decoration-none">
                 <svg class="bi me-2" width="40" height="32">
                     <use xlink:href="#bootstrap"></use>
@@ -83,18 +84,13 @@
                     </a>
                 </li>
                 <li>
-                    <a href="{% url 'manage_schedule' %}" class="nav-link link-dark">
+                    <a href="{% url 'manage_schedule' -1 %}" class="nav-link link-dark">
                         <i class="fas fa-calendar-alt me-2"></i> Manage Schedule
                     </a>
                 </li>
                 <li>
                     <a href="#" class="nav-link link-dark">
                         <i class="fas fa-file-medical-alt me-2"></i> Patient Records
-                    </a>
-                </li>
-                <li>
-                    <a href="#" class="nav-link link-dark">
-                        <i class="fas fa-envelope me-2"></i> Messages
                     </a>
                 </li>
                 <li>

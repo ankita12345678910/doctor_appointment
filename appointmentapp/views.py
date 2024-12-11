@@ -42,8 +42,9 @@ def myView(request):
         'user':user
     })
 
-def create_user(request):
+def bookAppointment(request):
     user_id= User.objects.filter(id=1).first()
+    doctor_schedule=DoctorSchedule.objects.filter(doctor_id=user_id)
     if request.method == 'POST':
         patient_id=request.POST.get('patient_id')
         if patient_id:
@@ -93,19 +94,47 @@ def create_user(request):
         )
         return render(request, 'user/book_new_appointment.html')
     return render(request, 'user/book_new_appointment.html',{
-        'user':user_id
+        'doctor': user_id,
+        'doctor_schedule': doctor_schedule,
     })
+
+def manageSchedule(request, id=None):
     
-def manageSchedule(request):
-    if request.method=='POST':
-        schedule_date=request.POST.get('date')
-        start_date=request.POST.get('starTtime')
-        end_date=request.POST.get('endTime')
-        if schedule_date and start_date and end_date:
-            schedule=DoctorSchedule.objects.create(
-                date=schedule_date,
-                start_time=start_date,
-                end_time=end_date,
-                doctor=request.user
-            )
-    return render(request,'doctor/manage_schedule.html')
+    if id == str(-1):
+        title = "Add New Schedule"
+        button_text = "Add"
+        schedule = None
+    else:
+        title = "Edit Schedule"
+        button_text = "Update"
+        # Using raw SQL query
+        schedules = DoctorSchedule.objects.raw("SELECT * FROM doctor_schedule WHERE id=%s AND doctor_id=%s", [id, request.user.id])
+        schedule = schedules[0] if schedules else None
+
+    if request.method == 'POST':
+        schedule_date = request.POST.get('date')
+        start_time = request.POST.get('startTime')
+        end_time = request.POST.get('endTime')
+        if schedule_date and start_time and end_time:
+            if schedule:
+                # Update existing schedule
+                schedule.date = schedule_date
+                schedule.start_time = start_time
+                schedule.end_time = end_time
+                schedule.save()
+            else:
+                # Create new schedule
+                schedule = DoctorSchedule.objects.create(
+                    date=schedule_date,
+                    start_time=start_time,
+                    end_time=end_time,
+                    doctor=request.user
+                )
+            return redirect('doctor_dashboard')  # Redirect to a relevant page after saving
+
+    return render(request, 'doctor/manage_schedule.html', {
+        'id': id,
+        'title': title,
+        'schedule': schedule,
+        'button_text': button_text
+    })
