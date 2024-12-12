@@ -8,10 +8,13 @@ import uuid
 from django.http import HttpResponse
 from datetime import datetime
 from django.contrib.auth.decorators import login_required
+from django.http import JsonResponse
 
 def homePage(request):
     return render(request,"home/index.html")
 
+# doctor actions
+#________________________________________________________________________________
 def login_view(request):
     if request.method == 'POST':
         email=request.POST.get('email')
@@ -36,11 +39,50 @@ def logout_user(request):
     logout(request)
     return redirect('home')
 
-def myView(request):
-    user = User.objects.filter(id=1).first()
-    return render(request,"user/book_new_appointment.html",{
-        'user':user
+
+def manageSchedule(request, id=None):
+    
+    if id == str(-1):
+        title = "Add New Schedule"
+        button_text = "Add"
+        schedule = None
+    else:
+        title = "Edit Schedule"
+        button_text = "Update"
+        # Using raw SQL query
+        schedules = DoctorSchedule.objects.raw("SELECT * FROM doctor_schedule WHERE id=%s AND doctor_id=%s", [id, request.user.id])
+        schedule = schedules[0] if schedules else None
+
+    if request.method == 'POST':
+        schedule_date = request.POST.get('date')
+        start_time = request.POST.get('startTime')
+        end_time = request.POST.get('endTime')
+        if schedule_date and start_time and end_time:
+            if schedule:
+                # Update existing schedule
+                schedule.date = schedule_date
+                schedule.start_time = start_time
+                schedule.end_time = end_time
+                schedule.save()
+            else:
+                # Create new schedule
+                schedule = DoctorSchedule.objects.create(
+                    date = schedule_date,
+                    start_time = start_time,
+                    end_time = end_time,
+                    doctor = request.user
+                )
+            return redirect('doctor_dashboard')  # Redirect to a relevant page after saving
+
+    return render(request, 'doctor/manage_schedule.html', {
+        'id': id,
+        'title': title,
+        'schedule': schedule,
+        'button_text': button_text
     })
+
+# patient actions
+#________________________________________________________________________________
 
 def bookAppointment(request):
     user_id= User.objects.filter(id=1).first()
@@ -83,7 +125,7 @@ def bookAppointment(request):
         doctor_id = request.POST.get('doctor') 
         patient_type = request.POST.get('patient_type')     
         appointment_date = datetime.strptime(request.POST.get('appointment_date'), '%m/%d/%Y').date()
-        appointment_time = datetime.strptime(request.POST.get('appointment_time') ,'%I:%M %p').time()
+        appointment_time = datetime.strptime(request.POST.get('appointment_time') ,'%H:%M').time()
         doctor =  User.objects.get(id=doctor_id)
         appointment=Appointment.objects.create(
         appointment_date=appointment_date,
@@ -92,49 +134,55 @@ def bookAppointment(request):
         patient=user,
         doctor=doctor   
         )
-        return render(request, 'user/book_new_appointment.html')
+        return render(request, 'user/appointment_confirmation.html',{
+            'patient_id':patient_id,
+            'patient_name': f"{user.first_name} {user.last_name}",
+            'appointment_time': appointment_time.strftime('%I:%M %p'),  # Display in AM/PM format
+            'appointment_date': appointment_date.strftime('%m/%d/%Y')
+        })
     return render(request, 'user/book_new_appointment.html',{
         'doctor': user_id,
         'doctor_schedule': doctor_schedule,
     })
 
-def manageSchedule(request, id=None):
-    
-    if id == str(-1):
-        title = "Add New Schedule"
-        button_text = "Add"
-        schedule = None
-    else:
-        title = "Edit Schedule"
-        button_text = "Update"
-        # Using raw SQL query
-        schedules = DoctorSchedule.objects.raw("SELECT * FROM doctor_schedule WHERE id=%s AND doctor_id=%s", [id, request.user.id])
-        schedule = schedules[0] if schedules else None
-
-    if request.method == 'POST':
-        schedule_date = request.POST.get('date')
-        start_time = request.POST.get('startTime')
-        end_time = request.POST.get('endTime')
-        if schedule_date and start_time and end_time:
+def ajaxFetchTime(request):
+    appointment_date = request.GET.get('appointment_date')
+    doctor_id = request.GET.get('doctor_id')
+    if appointment_date:
+        try:
+            date_obj = datetime.strptime(appointment_date, '%m/%d/%Y')
+            schedule = DoctorSchedule.objects.filter(doctor_id=doctor_id, date=date_obj).first()
             if schedule:
-                # Update existing schedule
-                schedule.date = schedule_date
-                schedule.start_time = start_time
-                schedule.end_time = end_time
-                schedule.save()
-            else:
-                # Create new schedule
-                schedule = DoctorSchedule.objects.create(
-                    date=schedule_date,
-                    start_time=start_time,
-                    end_time=end_time,
-                    doctor=request.user
-                )
-            return redirect('doctor_dashboard')  # Redirect to a relevant page after saving
+                # Convert the DoctorSchedule object into a dictionary
+                schedule_data = {
+                    'id': schedule.id,
+                    'doctor_id': schedule.doctor_id,
+                    'date': schedule.date.strftime('%m/%d/%Y'),
+                    'start_time': schedule.start_time.strftime('%H:%M'),
+                    'end_time': schedule.end_time.strftime('%H:%M'),
+                }
 
-    return render(request, 'doctor/manage_schedule.html', {
-        'id': id,
-        'title': title,
-        'schedule': schedule,
-        'button_text': button_text
-    })
+                response_data = {
+                    'status': 'success',
+                    'schedule': schedule_data,
+                }
+            else:
+                response_data = {
+                    'status': 'error',
+                    'message': 'No schedule found for the given doctor and date'
+                }
+        except ValueError:
+            response_data = {
+                'status': 'error',
+                'message': 'Invalid date format'
+            }
+    else:
+        response_data = {
+            'status': 'error',
+            'message': 'No appointment date provided'
+        }
+
+    return JsonResponse(response_data)
+
+    
+

@@ -1,0 +1,82 @@
+{% extends 'base.html' %}
+
+{% block title %}
+{{ block.super }} - Appointment Confirmation
+{% endblock %}
+
+{% block stylesheets %}
+{{ block.super }}
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+{% load static %}
+
+<!-- Confirmation Section -->
+<section class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <!-- Card with enhanced design -->
+            <div class="card shadow-lg border-0 rounded-4 bg-light">
+                <div class="card-header bg-primary text-white text-center p-4 rounded-4">
+                    <h3 class="mb-0">Appointment Confirmed!</h3>
+                    <p class="mb-0 fs-6">Your appointment details are as follows:</p>
+                </div>
+                <div class="card-body p-5">
+                    <div class="text-center mb-4">
+                        <!-- Appointment icon -->
+                        <i class="bi bi-calendar-check fs-1 text-success"></i>
+                    </div>
+                    <h5 class="card-title text-center mb-4">Thank you for booking with us!</h5>
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <strong>Patient ID:</strong>
+                        </div>
+                        <div class="col-md-6 text-end">
+                            <span class="text-muted">{{ patient_id }}</span>
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <strong>Patient Name:</strong>
+                        </div>
+                        <div class="col-md-6 text-end">
+                            <span class="text-muted">{{ patient_name }}</span>
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <strong>Appointment Date:</strong>
+                        </div>
+                        <div class="col-md-6 text-end">
+                            <span class="text-muted">{{ appointment_date }}</span>
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <strong>Appointment Time:</strong>
+                        </div>
+                        <div class="col-md-6 text-end">
+                            <span class="text-muted">{{ appointment_time }}</span>
+                        </div>
+                    </div>
+                    <div class="text-center mt-4">
+                        <a href="{% url 'home' %}" class="btn btn-success btn-lg px-5 py-2">
+                            <i class="bi bi-house-door"></i> Go to Dashboard
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock %}
+
+{% block footer %}
+{{ block.super }}
+{% endblock %}
+
+{% block javascript %}
+{{ block.super }}
+{% endblock %}

@@ -28,7 +28,8 @@
                                 <form action="" method="post">
                                     {% csrf_token %}
                                     <div data-mdb-input-init class="form-outline mb-4">
-                                        <select data-mdb-select-init class="form-control form-control-lg" name="doctor">
+                                        <select data-mdb-select-init class="form-control form-control-lg" name="doctor"
+                                            id="doctor_id">
                                             <option value="{{ user.id }}" selected>{{ user.first_name }}
                                                 {{user.last_name }}</option>
                                         </select>
@@ -63,8 +64,8 @@
                                         <div class="col-md-6 mb-4">
                                             <div data-mdb-input-init class="form-outline">
                                                 <select data-mdb-select-init class="form-control form-control-lg"
-                                                    name="appointment_time">
-                                                    <option value="">-select-</option>
+                                                    name="appointment_time" id="appointment_time">
+
                                                 </select>
                                                 <label class="form-label" for="form3Example1n1">Appointment time
                                                     <span style="color: red;">*</span></label>
@@ -210,6 +211,39 @@
         });
         $("#format").on("change", function () {
             $("#datepicker").datepicker("option", "dateFormat", $(this).val());
+        });
+    });
+    $('body').on('change', '#datepicker', function () {
+        var doc_id = $("#doctor_id").val();
+        $.ajax({
+            url: "{% url 'ajax_fetch_time_from_date' %}",
+            type: "GET",
+            data: {
+                appointment_date: $(this).val(),
+                doctor_id: doc_id
+            },
+            dataType: 'json',
+            success: function (response) {
+                var html = '<option value="">-select-</option>';
+                console.log(response)
+                if (response.status === 'success' && response.schedule) {
+                    var startTime = response.schedule.start_time;
+                    var endTime = response.schedule.end_time;
+                    var start = new Date("1970-01-01T" + startTime + ":00Z");
+                    var end = new Date("1970-01-01T" + endTime + ":00Z");
+                    for (var time = start; time < end; time.setMinutes(time.getMinutes() + 30)) {
+                        var hour = time.getUTCHours().toString().padStart(2, '0');
+                        var minute = time.getUTCMinutes().toString().padStart(2, '0');
+                        var timeString = hour + ':' + minute;
+                        html += `<option value="${timeString}">${timeString}</option>`;
+                    }
+                    $('#appointment_time').html(html);
+                }
+            },
+            error: function (xhr, status, error) {
+                console.error('AJAX request failed:', error);
+                $('#appointment_time').html('<option value="">Error fetching times</option>');
+            }
         });
     });
     $('body').on('change', '#js_patient_type', function () {
