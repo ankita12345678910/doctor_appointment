@@ -7,5 +7,6 @@ urlpatterns = [
     path('doctor/dashboard', views.doctor_dashboard, name='doctor_dashboard'),
     path('logout/', views.logout_user, name='logout'),
     path('manage/schedule/<id>', views.manageSchedule, name='manage_schedule'),
+    path('cancel/appointment/<id>', views.cancelAppointment, name='cancel_appointment'),
     path('ajax/fetch/time', views.ajaxFetchTime, name='ajax_fetch_time_from_date'),
 ]

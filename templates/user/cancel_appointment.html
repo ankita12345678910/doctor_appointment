@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+
+{% block title %}
+{{ block.super }} - cancel schedule
+{% endblock %}
+
+{% block stylesheets %}
+{{ block.super }}
+{% endblock %}
+{% block content %}
+{% load static %}
+<div class="row py-5 view-cart-items" style="background-color: rgb(241, 243, 193);">
+    <div class="col-md-4 py-5">
+        <div class="py-4 px-5 m-5 bg-white shadow-lg rounded-1 cart_summary" style="width: 100%;">
+
+        </div>
+    </div>
+    <div class="col-md-8 py-5">
+        <div class="py-4 px-5 m-5 bg-white shadow-lg rounded-1 cart_items" style="width: 90%;">
+
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block javascript %}
+{{ block.super }}
+{% endblock %}

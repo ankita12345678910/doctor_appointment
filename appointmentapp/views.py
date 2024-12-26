@@ -49,7 +49,6 @@ def manageSchedule(request, id=None):
     else:
         title = "Edit Schedule"
         button_text = "Update"
-        # Using raw SQL query
         schedules = DoctorSchedule.objects.raw("SELECT * FROM doctor_schedule WHERE id=%s AND doctor_id=%s", [id, request.user.id])
         schedule = schedules[0] if schedules else None
 
@@ -141,7 +140,7 @@ def bookAppointment(request):
             'appointment_date': appointment_date.strftime('%m/%d/%Y')
         })
     return render(request, 'user/book_new_appointment.html',{
-        'doctor': user_id,
+        'user': user_id,
         'doctor_schedule': doctor_schedule,
     })
 
@@ -184,5 +183,6 @@ def ajaxFetchTime(request):
 
     return JsonResponse(response_data)
 
-    
+def cancelAppointment(request,id=None):
+    return render(request,'user/cancel_appointment.html')  
 
