@@ -10,6 +10,8 @@ __pycache__/
 
 # Environment variables (do not commit the .env file)
 # .env
+.gitignore
+
 
 # IDEs and editors
 .vscode/
