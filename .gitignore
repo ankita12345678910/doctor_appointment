@@ -9,7 +9,7 @@ __pycache__/
 # */migrations/
 
 # Environment variables (do not commit the .env file)
-# .env
+.env
 .gitignore
 
 
