@@ -66,26 +66,20 @@
 <div class="row py-5 view-cart-items" style="background-color: rgb(241, 243, 193);">
     <div class="col-md-4 py-5">
         <div class="py-4 px-5 m-5 bg-white shadow-lg rounded-1 cart_summary" style="width: 100%;">
-            <label for="">Mobile
-                <span style="color: red;">*</span>
-            </label>
-            <input type="text" class="form-control mobile_number">
-            <label class="form-label" for="datepicker">Appointment date
-                <span style="color: red;">*</span></label>
-            <input type="text" id="datepicker" class="form-control appointment_date" name="appointment_date" />
-            <p style="display:none;">Format options:<br>
-                <select id="format">
-                    <option value="mm/dd/yy">Default - mm/dd/yy</option>
-                    <option value="yy-mm-dd">ISO 8601 - yy-mm-dd</option>
-                    <option value="d M, y">Short - d M, y</option>
-                    <option value="d MM, y">Medium - d MM, y</option>
-                    <option value="DD, d MM, yy">Full - DD, d MM, yy</option>
-                    <option value="'day' d 'of' MM 'in the year' yy">With text - 'day' d 'of' MM 'in the year' yy
-                    </option>
-                </select>
-            </p>
-            <br>
-            <button class="btn btn-lg search_appointment" style="background-color: cadetblue;">Search</button>
+            <form id="appointment_form">
+                {% csrf_token %}
+                <label for="">Mobile
+                    <span style="color: red;">*</span>
+                </label>
+                <input type="text" class="form-control" name="mobile_number" required>
+                <label class="form-label" for="datepicker">Appointment date
+                    <span style="color: red;">*</span></label>
+                <input type="text" id="datepicker" class="form-control" name="appointment_date" required />
+
+                <br>
+                <button type="submit" class="btn btn-lg search_appointment"
+                    style="background-color: cadetblue;">Search</button>
+            </form>
         </div>
     </div>
     <div class="col-md-8 py-5">
@@ -103,21 +97,6 @@
                         </tr>
                     </thead>
                     <tbody id="table_body">
-                        <!-- Sample data row -->
-                        <!-- <tr>
-                            <td>John Doe</td>
-                            <td>12345</td>
-                            <td>9876543210</td>
-                            <td>01/30/2025</td>
-                            <td>10:00 AM - 11:00 AM</td>
-                            <td>
-                                <div class="action-buttons">
-                                    <button>Edit</button>
-                                    <button>Cancel</button>
-                                </div>
-                            </td>
-                        </tr> -->
-                        <!-- Add more rows here -->
                     </tbody>
                 </table>
             </div>
@@ -132,20 +111,51 @@
 <script src="https://code.jquery.com/ui/1.14.1/jquery-ui.min.js"></script>
 <script>
     $(function () {
-        $("#datepicker").datepicker();  // Initialize the datepicker
-
-        // Update the date format when the select option changes
-        $("#format").on("change", function () {
-            $("#datepicker").datepicker("option", "dateFormat", $(this).val());
-        });
+        $("#datepicker").datepicker();
     });
     if ($('#table_body').children().length === 0) {
         $('#table_body').append("<tr><td colspan='6' style='text-align: center;'>No recorded data</td></tr>");
     }
-    $('body').on('click', '.search_appointment', function () {
-        mobile = $('.mobile_number').val()
-        appointment_date = $('.appointment_date').val()
-        console.log(mobile, appointment_date)
+    $('body').on('click', '.search_appointment', function (e) {
+        e.preventDefault();
+        formData = new FormData($('#appointment_form')[0])
+        console.log(formData)
+        $.ajax({
+            url: "{% url 'ajax_fetch_appointment' %}",
+            type: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function (response) {
+                console.log('Response received:', response);
+                $('#table_body').empty();
+
+                if (response.length > 0) {
+                    response.forEach(function (appointment) {
+                        $('#table_body').append(
+                            `<tr>
+                        <td>${appointment.fullname}</td>
+                        <td>${appointment.patient_id}</td>
+                        <td>${appointment.mobile}</td>
+                        <td>${appointment.appointment_date}</td>
+                        <td>${appointment.appointment_time}</td>
+                        <td>
+                            <div class="action-buttons">
+                                <button href="#">Edit</button>
+                                <button href="#">Cancel</button>
+                            </div>
+                        </td>
+                    </tr>`
+                        );
+                    });
+                } else {
+                    $('#table_body').append("<tr><td colspan='6' style='text-align: center;'>No appointments found.</td></tr>");
+                }
+            },
+            error: function (xhr, status, error) {
+                console.error('Error occurred:', error);
+            }
+        });
     })
 </script>
 {% endblock %}

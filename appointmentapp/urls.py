@@ -9,4 +9,5 @@ urlpatterns = [
     path('manage/schedule/<id>', views.manageSchedule, name='manage_schedule'),
     path('cancel/appointment/<id>', views.cancelAppointment, name='cancel_appointment'),
     path('ajax/fetch/time', views.ajaxFetchTime, name='ajax_fetch_time_from_date'),
+    path('ajax/fetch/appointment', views.ajaxFetchAppointment, name='ajax_fetch_appointment'),
 ]

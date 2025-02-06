@@ -186,3 +186,38 @@ def ajaxFetchTime(request):
 def cancelAppointment(request,id=None):
     return render(request,'user/cancel_appointment.html')  
 
+def ajaxFetchAppointment(request):
+    if request.method == 'POST':
+        mobile = request.POST.get('mobile_number')
+        appointment_date_str = request.POST.get('appointment_date')
+        appointment_date = datetime.strptime(appointment_date_str, '%m/%d/%Y').date() 
+
+        with connection.cursor() as cursor:
+            cursor.execute('''
+                SELECT 
+                    u.id AS user_id,
+                    u.patient_id, 
+                    CONCAT(u.first_name, ' ', u.last_name) AS fullname, 
+                    u.phone_number AS mobile, 
+                    pa.appointment_date, 
+                    pa.appointment_time 
+                FROM auth_user u 
+                INNER JOIN patient_appointment pa 
+                ON pa.patient_id = u.id 
+                WHERE u.phone_number = %s 
+                AND pa.appointment_date = %s
+            ''', [mobile, appointment_date])
+
+            appointments = cursor.fetchall()
+            data = []
+            for appointment in appointments:
+                data.append({
+                    'patient_id': appointment[1],
+                    'fullname': appointment[2],  
+                    'mobile': appointment[3],      
+                    'appointment_date': appointment[4].strftime('%Y-%m-%d'),
+                    'appointment_time': appointment[5],
+                })
+            return JsonResponse(data, status=200, safe=False)
+    else:
+        return JsonResponse({'error': 'Invalid request method.'}, status=400)
