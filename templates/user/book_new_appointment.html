@@ -248,14 +248,14 @@
     });
     $('body').on('change', '#js_patient_type', function () {
         if ($(this).val() == 'old') {
-            $('#new_patient').css({ 'display': 'none' })
-            $('#patient_email').css({ 'display': 'none' })
-            $('#patient_id').css({ 'display': 'block' })
+            $('#new_patient').css({ 'display': 'none' });
+            $('#patient_email').css({ 'display': 'none' });
+            $('#patient_id').css({ 'display': 'block' });
         } else {
-            $('#new_patient').css({ 'display': 'block' })
-            $('#patient_email').css({ 'display': 'block' })
-            $('#patient_id').css({ 'display': 'none' })
+            $('#new_patient').css({ 'display': 'block' });
+            $('#patient_email').css({ 'display': 'block' });
+            $('#patient_id').css({ 'display': 'none' });
         }
-    })
+    });
 </script>
 {% endblock %}

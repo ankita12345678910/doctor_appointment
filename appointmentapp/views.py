@@ -20,14 +20,14 @@ def login_view(request):
         email=request.POST.get('email')
         password=request.POST.get('password')
         role='doctor'
-        doctor_user=User.objects.raw('Select * from auth_user where role=%s and username=%s',[role,email])[0]
+        doctor_user=User.objects.raw('Select * from auth_user where role=%s and username=%s',[role,email])
         user=authenticate(request,username=email,password=password)
         if doctor_user is not None and user is not None:
             login(request, user)
             return redirect('doctor_dashboard')
         else:
             error="Only a doctor can login"
-            return render(request, 'login/login.html', {'error': error})
+            return render(request, 'login.html', {'error': error})
        
     return render(request,"login.html")
 
