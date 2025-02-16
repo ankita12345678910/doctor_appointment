@@ -209,6 +209,7 @@ def ajaxFetchAppointment(request):
             ''', [mobile, appointment_date])
 
             appointments = cursor.fetchall()
+            # print(set(appointments))
             data = []
             for appointment in appointments:
                 data.append({
