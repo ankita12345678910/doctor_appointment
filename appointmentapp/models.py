@@ -27,3 +27,16 @@ class DoctorSchedule(models.Model):
         unique_together=('doctor','date','start_time','end_time')
     def __str__(self):
         return f"{self.doctor.username} - {self.date} from {self.start_time} to {self.end_time}"
+    
+class DoctorSpecializations(models.Model):
+    name=models.CharField(max_length=255)
+    description=models.TextField(blank=True,null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    doctors=models.ManyToManyField(User,related_name="specializations")
+    
+    class Meta:
+        db_table='doctor_specializations'
+        
+    def __str__(self):
+        return self.name
