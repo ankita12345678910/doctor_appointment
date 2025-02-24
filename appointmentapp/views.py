@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login,logout
 from django.db import connection
 from .models import Appointment
-from .models import DoctorSchedule
+from .models import DoctorAvailabilities
 import uuid
 from django.http import HttpResponse
 from datetime import datetime
@@ -49,7 +49,7 @@ def manageSchedule(request, id=None):
     else:
         title = "Edit Schedule"
         button_text = "Update"
-        schedules = DoctorSchedule.objects.raw("SELECT * FROM doctor_schedule WHERE id=%s AND doctor_id=%s", [id, request.user.id])
+        schedules = DoctorAvailabilities.objects.raw("SELECT * FROM doctor_schedule WHERE id=%s AND doctor_id=%s", [id, request.user.id])
         schedule = schedules[0] if schedules else None
 
     if request.method == 'POST':
@@ -65,7 +65,7 @@ def manageSchedule(request, id=None):
                 schedule.save()
             else:
                 # Create new schedule
-                schedule = DoctorSchedule.objects.create(
+                schedule = DoctorAvailabilities.objects.create(
                     date = schedule_date,
                     start_time = start_time,
                     end_time = end_time,
@@ -85,7 +85,7 @@ def manageSchedule(request, id=None):
 
 def bookAppointment(request):
     user_id= User.objects.filter(id=1).first()
-    doctor_schedule=DoctorSchedule.objects.filter(doctor_id=user_id)
+    doctor_schedule=DoctorAvailabilities.objects.filter(doctor_id=user_id)
     if request.method == 'POST':
         patient_id=request.POST.get('patient_id')
         if patient_id:
@@ -150,9 +150,9 @@ def ajaxFetchTime(request):
     if appointment_date:
         try:
             date_obj = datetime.strptime(appointment_date, '%m/%d/%Y')
-            schedule = DoctorSchedule.objects.filter(doctor_id=doctor_id, date=date_obj).first()
+            schedule = DoctorAvailabilities.objects.filter(doctor_id=doctor_id, date=date_obj).first()
             if schedule:
-                # Convert the DoctorSchedule object into a dictionary
+                # Convert the DoctorAvailabilities object into a dictionary
                 schedule_data = {
                     'id': schedule.id,
                     'doctor_id': schedule.doctor_id,

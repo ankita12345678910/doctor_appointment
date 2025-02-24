@@ -1,5 +1,12 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django_mysql.models import EnumField
+
+class StatusEnum(models.TextChoices):
+    SCHEDULED = 'scheduled', 'Scheduled'
+    COMPLETED = 'completed', 'Completed'
+    CANCELLED = 'cancelled', 'Cancelled'
+    RESCHEDULED = 'rescheduled', 'Rescheduled'
 
 class Appointment(models.Model):
     APPOINTMENT_TYPES = [
@@ -16,24 +23,29 @@ class Appointment(models.Model):
     class Meta: db_table = 'patient_appointment'
     def __str__(self):
         return f"{self.patient.username} - {self.doctor.username} on {self.appointment_date} at {self.appointment_time}"
-    
-class DoctorSchedule(models.Model):
-    doctor=models.ForeignKey(User,on_delete=models.CASCADE,related_name='schedule')
-    date=models.DateField()
-    start_time=models.TimeField()
-    end_time=models.TimeField()
+
+
+class DoctorAvailabilities(models.Model):
+    doctor = models.ForeignKey(User,on_delete=models.CASCADE, related_name= 'schedule')
+    date = models.DateField()
+    start_time = models.TimeField()
+    end_time = models.TimeField()
+    status = EnumField(choices=StatusEnum.choices, default=StatusEnum.SCHEDULED)
+    maximum_patient = models.IntegerField(default=0)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
     class Meta:
-        db_table='doctor_schedule'
+        db_table='doctor_availabilities'
         unique_together=('doctor','date','start_time','end_time')
     def __str__(self):
         return f"{self.doctor.username} - {self.date} from {self.start_time} to {self.end_time}"
     
 class DoctorSpecializations(models.Model):
-    name=models.CharField(max_length=255)
-    description=models.TextField(blank=True,null=True)
+    name = models.CharField(max_length=255)
+    description = models.TextField(blank=True,null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    doctors=models.ManyToManyField(User,related_name="specializations")
+    doctors = models.ManyToManyField(User,related_name="specializations")
     
     class Meta:
         db_table='doctor_specializations'
