@@ -8,22 +8,27 @@ class StatusEnum(models.TextChoices):
     CANCELLED = 'cancelled', 'Cancelled'
     RESCHEDULED = 'rescheduled', 'Rescheduled'
 
-class Appointment(models.Model):
-    APPOINTMENT_TYPES = [
-        ('new', 'New'),
-        ('old', 'Old'),
-    ]
-
+class PatientBookAppointment(models.Model):
     appointment_date = models.DateField()
     appointment_time = models.TimeField()
-    patient_type = models.CharField(max_length=10, choices=APPOINTMENT_TYPES)
+    patient_type = EnumField(choices=[
+        ('new', 'New'),
+        ('old', 'Old')
+    ], default='new')
     patient = models.ForeignKey(User, on_delete=models.CASCADE, related_name='appointments_as_patient')
     doctor = models.ForeignKey(User, on_delete=models.CASCADE, related_name='appointments_as_doctor')
+    is_deleted = models.BooleanField(default=False)  # Field to mark if the appointment is deleted
+    reschedule_time = models.TimeField(null=True, blank=True)  # Time for rescheduled appointment
+    reschedule_date = models.DateField(null=True, blank=True)  # Date for rescheduled appointment
+    status = EnumField(choices=StatusEnum.choices, default='scheduled')  # Appointment status (scheduled, completed, etc.)
     created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)  # Automatically updates when the object is saved
+
     class Meta: 
         db_table = 'patient_book_appointment'
+        unique_together = ('appointment_date', 'appointment_time', 'patient', 'doctor')
     def __str__(self):
-        return f"{self.patient.username} - {self.doctor.username} on {self.appointment_date} at {self.appointment_time}"
+        return f"{self.patient.username} - {self.doctor.username} on {self.appointment_date} at {self.appointment_time} status {self.status}"
 
 
 class DoctorAvailabilities(models.Model):
@@ -47,6 +52,11 @@ class DoctorSpecializations(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     doctors = models.ManyToManyField(User,related_name="specializations")
+    status=EnumField(choices=[
+        ('active', 'Active'),
+        ('inactive', 'Inactive'),
+        ('deleted', 'Deleted'),
+    ], default='active')
     
     class Meta:
         db_table='doctor_specializations'

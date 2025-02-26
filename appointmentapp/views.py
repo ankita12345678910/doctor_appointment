@@ -2,7 +2,7 @@ from django.shortcuts import render,redirect
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login,logout
 from django.db import connection
-from .models import Appointment
+from .models import PatientBookAppointment
 from .models import DoctorAvailabilities
 import uuid
 from django.http import HttpResponse
@@ -202,7 +202,7 @@ def ajaxFetchAppointment(request):
                     pa.appointment_date, 
                     pa.appointment_time 
                 FROM auth_user u 
-                INNER JOIN patient_appointment pa 
+                INNER JOIN patient_book_appointment pa 
                 ON pa.patient_id = u.id 
                 WHERE u.phone_number = %s 
                 AND pa.appointment_date = %s

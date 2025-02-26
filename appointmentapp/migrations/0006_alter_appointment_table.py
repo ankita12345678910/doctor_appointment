@@ -10,8 +10,15 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
+        # Rename the model from 'appointment' to 'patientbookappointment'
+        migrations.RenameModel(
+            old_name="Appointment",
+            new_name="PatientBookAppointment",
+        ),
+        
+        # Rename the table in the database
         migrations.AlterModelTable(
-            name="appointment",
+            name="patientbookappointment",
             table="patient_book_appointment",
         ),
     ]
