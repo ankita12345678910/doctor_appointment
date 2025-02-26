@@ -20,7 +20,8 @@ class Appointment(models.Model):
     patient = models.ForeignKey(User, on_delete=models.CASCADE, related_name='appointments_as_patient')
     doctor = models.ForeignKey(User, on_delete=models.CASCADE, related_name='appointments_as_doctor')
     created_at = models.DateTimeField(auto_now_add=True)
-    class Meta: db_table = 'patient_appointment'
+    class Meta: 
+        db_table = 'patient_book_appointment'
     def __str__(self):
         return f"{self.patient.username} - {self.doctor.username} on {self.appointment_date} at {self.appointment_time}"
 

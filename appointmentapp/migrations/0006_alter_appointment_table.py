@@ -12,6 +12,6 @@ class Migration(migrations.Migration):
     operations = [
         migrations.AlterModelTable(
             name="appointment",
-            table="patient_appointment",
+            table="patient_book_appointment",
         ),
     ]
