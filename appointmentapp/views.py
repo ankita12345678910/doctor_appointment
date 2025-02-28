@@ -1,6 +1,6 @@
-from django.shortcuts import render,redirect
+from django.shortcuts import render, redirect
 from django.contrib.auth.models import User
-from django.contrib.auth import authenticate, login,logout
+from django.contrib.auth import authenticate, login, logout
 from django.db import connection
 from .models import PatientBookAppointment
 from .models import DoctorAvailabilities
@@ -10,30 +10,36 @@ from datetime import datetime
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 
+
 def homePage(request):
-    return render(request,"home/index.html")
+    return render(request, "home/index.html")
 
 # doctor actions
-#________________________________________________________________________________
+# ________________________________________________________________________________
+
+
 def login_view(request):
     if request.method == 'POST':
-        email=request.POST.get('email')
-        password=request.POST.get('password')
-        role='doctor'
-        doctor_user=User.objects.raw('Select * from auth_user where role=%s and username=%s',[role,email])
-        user=authenticate(request,username=email,password=password)
+        email = request.POST.get('email')
+        password = request.POST.get('password')
+        role = 'doctor'
+        doctor_user = User.objects.raw(
+            'Select * from auth_user where role=%s and username=%s', [role, email])
+        user = authenticate(request, username=email, password=password)
         if doctor_user is not None and user is not None:
             login(request, user)
             return redirect('doctor_dashboard')
         else:
-            error="Only a doctor can login"
+            error = "Only a doctor can login"
             return render(request, 'login.html', {'error': error})
-       
-    return render(request,"login.html")
 
-@login_required 
+    return render(request, "login.html")
+
+
+@login_required
 def doctor_dashboard(request):
     return render(request, 'doctor/doctor_dashboard.html')
+
 
 def logout_user(request):
     logout(request)
@@ -41,7 +47,7 @@ def logout_user(request):
 
 
 def manageSchedule(request, id=None):
-    
+
     if id == str(-1):
         title = "Add New Schedule"
         button_text = "Add"
@@ -49,7 +55,8 @@ def manageSchedule(request, id=None):
     else:
         title = "Edit Schedule"
         button_text = "Update"
-        schedules = DoctorAvailabilities.objects.raw("SELECT * FROM doctor_schedule WHERE id=%s AND doctor_id=%s", [id, request.user.id])
+        schedules = DoctorAvailabilities.objects.raw(
+            "SELECT * FROM doctor_schedule WHERE id=%s AND doctor_id=%s", [id, request.user.id])
         schedule = schedules[0] if schedules else None
 
     if request.method == 'POST':
@@ -66,12 +73,13 @@ def manageSchedule(request, id=None):
             else:
                 # Create new schedule
                 schedule = DoctorAvailabilities.objects.create(
-                    date = schedule_date,
-                    start_time = start_time,
-                    end_time = end_time,
-                    doctor = request.user
+                    date=schedule_date,
+                    start_time=start_time,
+                    end_time=end_time,
+                    doctor=request.user
                 )
-            return redirect('doctor_dashboard')  # Redirect to a relevant page after saving
+            # Redirect to a relevant page after saving
+            return redirect('doctor_dashboard')
 
     return render(request, 'doctor/manage_schedule.html', {
         'id': id,
@@ -81,15 +89,17 @@ def manageSchedule(request, id=None):
     })
 
 # patient actions
-#________________________________________________________________________________
+# ________________________________________________________________________________
+
 
 def bookAppointment(request):
-    user_id= User.objects.filter(id=1).first()
-    doctor_schedule=DoctorAvailabilities.objects.filter(doctor_id=user_id)
+    user_id = User.objects.filter(id=1).first()
+    doctor_schedule = DoctorAvailabilities.objects.filter(doctor_id=user_id)
     if request.method == 'POST':
-        patient_id=request.POST.get('patient_id')
+        patient_id = request.POST.get('patient_id')
         if patient_id:
-            user=User.objects.raw('Select * from auth_user where patient_id=%s',[patient_id])[0]
+            user = User.objects.raw(
+                'Select * from auth_user where patient_id=%s', [patient_id])[0]
         else:
             first_name = request.POST.get('patient_first_name')
             last_name = request.POST.get('patient_last_name')
@@ -99,9 +109,9 @@ def bookAppointment(request):
             address = request.POST.get('address')
             gender = request.POST.get('gender')
             guardian_name = request.POST.get('guardian_name')
-        
+
             if email and phone_number:
-                patient_id = 'P' + uuid.uuid4().hex[:6].upper() 
+                patient_id = 'P' + uuid.uuid4().hex[:6].upper()
                 user = User.objects.create_user(
                     username=email,
                     first_name=first_name,
@@ -121,28 +131,32 @@ def bookAppointment(request):
                     WHERE id = %s
                 """, [role, phone_number, address, gender, guardian_name, patient_id, user.id])
 
-        doctor_id = request.POST.get('doctor') 
-        patient_type = request.POST.get('patient_type')     
-        appointment_date = datetime.strptime(request.POST.get('appointment_date'), '%m/%d/%Y').date()
-        appointment_time = datetime.strptime(request.POST.get('appointment_time') ,'%H:%M').time()
-        doctor =  User.objects.get(id=doctor_id)
-        appointment=Appointment.objects.create(
-        appointment_date=appointment_date,
-        appointment_time=appointment_time,
-        patient_type=patient_type,
-        patient=user,
-        doctor=doctor   
+        doctor_id = request.POST.get('doctor')
+        patient_type = request.POST.get('patient_type')
+        appointment_date = datetime.strptime(
+            request.POST.get('appointment_date'), '%m/%d/%Y').date()
+        appointment_time = datetime.strptime(
+            request.POST.get('appointment_time'), '%H:%M').time()
+        doctor = User.objects.get(id=doctor_id)
+        appointment = Appointment.objects.create(
+            appointment_date=appointment_date,
+            appointment_time=appointment_time,
+            patient_type=patient_type,
+            patient=user,
+            doctor=doctor
         )
-        return render(request, 'user/appointment_confirmation.html',{
-            'patient_id':patient_id,
+        return render(request, 'user/appointment_confirmation.html', {
+            'patient_id': patient_id,
             'patient_name': f"{user.first_name} {user.last_name}",
-            'appointment_time': appointment_time.strftime('%I:%M %p'),  # Display in AM/PM format
+            # Display in AM/PM format
+            'appointment_time': appointment_time.strftime('%I:%M %p'),
             'appointment_date': appointment_date.strftime('%m/%d/%Y')
         })
-    return render(request, 'user/book_new_appointment.html',{
+    return render(request, 'user/book_new_appointment.html', {
         'user': user_id,
         'doctor_schedule': doctor_schedule,
     })
+
 
 def ajaxFetchTime(request):
     appointment_date = request.GET.get('appointment_date')
@@ -150,7 +164,8 @@ def ajaxFetchTime(request):
     if appointment_date:
         try:
             date_obj = datetime.strptime(appointment_date, '%m/%d/%Y')
-            schedule = DoctorAvailabilities.objects.filter(doctor_id=doctor_id, date=date_obj).first()
+            schedule = DoctorAvailabilities.objects.filter(
+                doctor_id=doctor_id, date=date_obj).first()
             if schedule:
                 # Convert the DoctorAvailabilities object into a dictionary
                 schedule_data = {
@@ -183,14 +198,17 @@ def ajaxFetchTime(request):
 
     return JsonResponse(response_data)
 
-def cancelAppointment(request,id=None):
-    return render(request,'user/cancel_appointment.html')  
+
+def cancelAppointment(request, id=None):
+    return render(request, 'user/cancel_appointment.html')
+
 
 def ajaxFetchAppointment(request):
     if request.method == 'POST':
         mobile = request.POST.get('mobile_number')
         appointment_date_str = request.POST.get('appointment_date')
-        appointment_date = datetime.strptime(appointment_date_str, '%m/%d/%Y').date() 
+        appointment_date = datetime.strptime(
+            appointment_date_str, '%m/%d/%Y').date()
 
         with connection.cursor() as cursor:
             cursor.execute('''
@@ -214,8 +232,8 @@ def ajaxFetchAppointment(request):
             for appointment in appointments:
                 data.append({
                     'patient_id': appointment[1],
-                    'fullname': appointment[2],  
-                    'mobile': appointment[3],      
+                    'fullname': appointment[2],
+                    'mobile': appointment[3],
                     'appointment_date': appointment[4].strftime('%Y-%m-%d'),
                     'appointment_time': appointment[5],
                 })
