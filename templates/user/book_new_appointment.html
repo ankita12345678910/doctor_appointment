@@ -28,10 +28,13 @@
                                 <form action="" method="post">
                                     {% csrf_token %}
                                     <div data-mdb-input-init class="form-outline mb-4">
-                                        <select data-mdb-select-init class="form-control form-control-lg" name="doctor"
-                                            id="doctor_id">
-                                            <option value="{{ user.id }}" selected>{{ user.first_name }}
-                                                {{user.last_name }}</option>
+                                        <select data-mdb-select-init class="form-control form-control-lg" name="doctor_name" id="doctor_id">
+                                            <option value="">-select-</option>
+                                            {% for doctor in doctor_users %}
+                                            <option value="{{ doctor.id }}">
+                                                {{ doctor.first_name }} {{ doctor.last_name }}
+                                            </option>
+                                            {% endfor %}
                                         </select>
                                         <label class="form-label" for="form3Example8">Doctor name <span
                                                 style="color: red;">*</span></label>

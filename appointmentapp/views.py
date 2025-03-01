@@ -23,8 +23,9 @@ def login_view(request):
         email = request.POST.get('email')
         password = request.POST.get('password')
         role = 'doctor'
-        doctor_user = User.objects.raw(
-            'Select * from auth_user where role=%s and username=%s', [role, email])
+        # doctor_user = User.objects.raw(
+        #     'Select * from auth_user where role=%s and username=%s', [role, email])
+        doctor_user = User.objects.get(username=email)
         user = authenticate(request, username=email, password=password)
         if doctor_user is not None and user is not None:
             login(request, user)
@@ -93,8 +94,9 @@ def manageSchedule(request, id=None):
 
 
 def bookAppointment(request):
-    user_id = User.objects.filter(id=1).first()
-    doctor_schedule = DoctorAvailabilities.objects.filter(doctor_id=user_id)
+    doctor_users = User.objects.raw(
+        'SELECT * FROM auth_user WHERE role = %s', ['doctor'])
+    doctor_schedule = DoctorAvailabilities.objects.filter(doctor_id=1)
     if request.method == 'POST':
         patient_id = request.POST.get('patient_id')
         if patient_id:
@@ -138,7 +140,7 @@ def bookAppointment(request):
         appointment_time = datetime.strptime(
             request.POST.get('appointment_time'), '%H:%M').time()
         doctor = User.objects.get(id=doctor_id)
-        appointment = Appointment.objects.create(
+        appointment = PatientBookAppointment.objects.create(
             appointment_date=appointment_date,
             appointment_time=appointment_time,
             patient_type=patient_type,
@@ -153,7 +155,7 @@ def bookAppointment(request):
             'appointment_date': appointment_date.strftime('%m/%d/%Y')
         })
     return render(request, 'user/book_new_appointment.html', {
-        'user': user_id,
+        'doctor_users': doctor_users,
         'doctor_schedule': doctor_schedule,
     })
 
