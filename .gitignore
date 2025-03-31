@@ -23,3 +23,9 @@ __pycache__/
 # /static/
 # **/static/
 **/media/
+
+/static/images/*
+!static/images/loader.gif
+
+/static/logos/*
+!static/logos/image.png
