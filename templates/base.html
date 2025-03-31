@@ -12,67 +12,44 @@
 </head>
 
 <body>
+    {% load static %}
     {% block navigation_bar %}
-    <nav class="navbar navbar-expand-lg fixed-top" style="background-color:#c0abc9;height:50px;">
-        <div class="container-fluid">
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
-                data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
-                aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                    <li class="nav-item">
-                        <a class="nav-link active" aria-current="page" href="{% url 'home' %}">Home</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">Link</a>
-                    </li>
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
-                            aria-expanded="false">
-                            Patient
-                        </a>
-                        <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="{% url 'book_appointment' %}">Book appointment</a></li>
-                            <li><a class="dropdown-item" href="{% url 'cancel_appointment' -1 %}">cancel appointment</a>
-                            </li>
-                            <li><a class="dropdown-item" href="#">Another action</a></li>
-                            <li>
-                                <hr class="dropdown-divider">
-                            </li>
-                            <li><a class="dropdown-item" href="#">Something else here</a></li>
-                        </ul>
-                    </li>
-                    {% if user.is_authenticated %}
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
-                            aria-expanded="false">
-                            {{ user.first_name }} {{ user.last_name }} </a>
-                        <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="{% url 'logout' %}">Logout</a></li>
-                        </ul>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link active" aria-current="page" href="{% url 'doctor_dashboard' %}">Dashboard</a>
-                    </li>
-                    {% else %}
-                    <li class="nav-item dropdown"> <a class="nav-link dropdown-toggle" href="#" role="button"
-                            data-bs-toggle="dropdown" aria-expanded="false"> Login </a>
-                        <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="{% url 'login' %}">Doctor Login</a></li>
-                        </ul>
-                    </li> {% endif %}
-                </ul>
-                <!-- <form class="d-flex" role="search">
-                    <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
-                    <button class="btn btn-outline-success" type="submit">Search</button>
-                </form> -->
+    <header>
+        <!-- Main Navbar -->
+        <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm" 
+             style="width: 100%;height: 100px; position: fixed; top: 0; left: 0; z-index: 1000;">
+            <div class="container-fluid">
+                <!-- Logo on the left side -->
+                <a href="{% url 'home' %}" class="navbar-brand">
+                    <img src="{% static 'logos/image.png' %}" alt="Logo" style="height: 90px;">
+                </a>
+    
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                    data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
+                    aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                    <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+                        <li class="nav-item"><a class="nav-link" href="{% url 'home' %}">Home</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#">About</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#">Services</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#">Doctors</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#">Contact</a></li>
+                        <li class="nav-item">
+                            <a class="btn ms-2" style="background-color: #265d4b;color: white;" href="{% url 'book_appointment' %}">Appointment <i class="fas fa-arrow-right"></i></a>
+                        </li>
+                    </ul>
+                </div>
             </div>
-        </div>
-    </nav>
-    {% endblock %}
-    <div class="m-5 py-5" style="margin-top: 70px;">
+        </nav>
+    </header>
+    
+{% endblock %}
+
+
+
+    <div class="m-3">
         {% block content %}{% endblock %}
     </div>
     {% block javascript %}
