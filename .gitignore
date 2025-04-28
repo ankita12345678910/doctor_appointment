@@ -22,7 +22,7 @@ __pycache__/
 # Static and media files
 # /static/
 # **/static/
-**/media/
+# **/media/
 
 # /static/images/*
 # !static/images/loader.gif
