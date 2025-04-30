@@ -14,6 +14,9 @@ from django.http import JsonResponse
 def homePage(request):
     return render(request, "home/index.html")
 
+def testHome(request):
+    return render(request, "home/test_home.html")
+
 # doctor actions
 # ________________________________________________________________________________
 
