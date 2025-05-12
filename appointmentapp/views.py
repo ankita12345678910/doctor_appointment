@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 from django.db import connection
 from .models import PatientBookAppointment
-from .models import DoctorAvailabilities
+from .models import DoctorAvailabilities,DoctorSpecializations
 import uuid
 from django.http import HttpResponse
 from datetime import datetime
@@ -20,34 +20,9 @@ def testHome(request):
 # doctor actions
 # ________________________________________________________________________________
 
-
-def login_view(request):
-    if request.method == 'POST':
-        email = request.POST.get('email')
-        password = request.POST.get('password')
-        role = 'doctor'
-        # doctor_user = User.objects.raw(
-        #     'Select * from auth_user where role=%s and username=%s', [role, email])
-        doctor_user = User.objects.get(username=email)
-        user = authenticate(request, username=email, password=password)
-        if doctor_user is not None and user is not None:
-            login(request, user)
-            return redirect('doctor_dashboard')
-        else:
-            error = "Only a doctor can login"
-            return render(request, 'login.html', {'error': error})
-
-    return render(request, "login.html")
-
-
 @login_required
 def doctor_dashboard(request):
     return render(request, 'doctor/doctor_dashboard.html')
-
-
-def logout_user(request):
-    logout(request)
-    return redirect('home')
 
 
 def manageSchedule(request, id=None):
@@ -245,3 +220,7 @@ def ajaxFetchAppointment(request):
             return JsonResponse(data, status=200, safe=False)
     else:
         return JsonResponse({'error': 'Invalid request method.'}, status=400)
+
+def bookNewAppointment(request):
+    specializations = DoctorSpecializations.objects.filter(status='active')
+    return render(request, 'user/book_appointment.html', {'specializations': specializations})

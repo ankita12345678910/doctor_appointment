@@ -46,7 +46,10 @@
                             <li>
                                 <hr class="dropdown-divider">
                             </li>
-                            <li><a class="dropdown-item" href="{% url 'logout' %}">Sign out</a></li>
+                            <form method="post" style="text-align: center;" action="{% url 'logout' %}">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-danger">Logout</button>
+                            </form>
                         </ul>
                         {% else %}
                         <a href="{% url 'login' %}" class="d-flex align-items-center link-dark text-decoration-none">
@@ -60,7 +63,7 @@
             </div>
         </div>
     </nav>
-    
+
     <div class="d-flex">
         <!-- Sidebar Section -->
         <div class="flex-shrink-0 p-3 shadow-lg" style="width: 250px; height: 100vh;background-color: rgb(46, 82, 75);">
@@ -70,7 +73,8 @@
             <hr>
             <ul class="nav nav-pills flex-column mb-auto">
                 <li class="nav-item">
-                    <a href="{% url 'home' %}" class="nav-link link-light active" aria-current="page" style="color: lightgreen;">
+                    <a href="{% url 'home' %}" class="nav-link link-light active" aria-current="page"
+                        style="color: lightgreen;">
                         <i class="fas fa-home me-2"></i> Home
                     </a>
                 </li>
@@ -97,20 +101,20 @@
             </ul>
             <hr>
         </div>
-    
+
         <!-- Main Content Section -->
         <div class="flex-grow-1 p-4">
             {% block content %}{% endblock %}
         </div>
     </div>
-    
+
     <style>
         .nav-link.active {
             color: black !important;
             background-color: rgb(53, 243, 224) !important;
         }
     </style>
-    
+
 
     {% block javascript %}
     <!-- Bootstrap 5.3 JS -->
