@@ -11,8 +11,12 @@ from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 
 
+#Homepage actions
 def homePage(request):
-    return render(request, "home/index.html")
+    return render(request, "home/homepage.html")
+
+def aboutUs(request):
+    return render(request, "home/about_us.html")
 
 def testHome(request):
     return render(request, "home/test_home.html")
