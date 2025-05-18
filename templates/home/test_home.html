@@ -3,35 +3,37 @@
 <html>
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="{% static 'images/favicon.ico' %}" type="image/x-icon" sizes="512x512">
     <title>Doctor Appointments Website</title>
     <!-- Add inside <head> in your base.html -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/fontawesome.min.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <!-- Bootstrap JS (required for carousel functionality) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 
     <style>
         .container {
             padding-left: 150px;
             padding-right: 150px;
         }
-        /* Custom Tailwind CSS */
-        @layer utilities {
-            .page-flip {
-                transition: transform 1s ease-in-out;
-            }
 
-            .carousel-item-next .page-flip,
-            .carousel-item-prev .page-flip {
-                transform: rotateY(90deg); /* This makes the "page flip" effect */
-            }
+        .page-flip {
+            transition: transform 1s ease-in-out;
+        }
 
-            .carousel-item.active .page-flip {
-                transform: rotateY(0deg); /* The active slide stays flat */
-            }
+        .carousel-item-next .page-flip,
+        .carousel-item-prev .page-flip {
+            transform: rotateY(90deg);
+            /* This makes the "page flip" effect */
+        }
+
+        .carousel-item.active .page-flip {
+            transform: rotateY(0deg);
+            /* The active slide stays flat */
         }
 
         /* Smooth Scroll for sections */
@@ -41,244 +43,569 @@
 
         @media (max-width: 991px) {
             #mainMenu.collapse.show {
-            position: absolute;
-            top: 100px; /* Height of your header */
+                position: absolute;
+                top: 100px;
+                /* Height of your header */
             }
         }
-          
+
+        .text-green {
+            font-family: 'Poppins', sans-serif;
+            font-weight: bold;
+            color: #0c5443;
+        }
+
+        .heading-black {
+            font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+            font-size: 1.6rem;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        .paragraph-black {
+            font-family: 'Roboto', sans-serif;
+            font-size: 1rem;
+            color: #555;
+            margin-bottom: 30px;
+        }
+
+        .tip-box {
+            transition: transform 0.3s ease;
+        }
+
+        .tip-box:hover {
+            transform: translateY(-20px);
+        }
+
+
+        .testimonial-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .testimonial-card:hover {
+            transform: translateY(-20px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .hover-lift {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .hover-lift:hover {
+            transform: translateY(-20px);
+            box-shadow: 0 12px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .doctor-img {
+            width: 120px;
+            height: 120px;
+            object-fit: cover;
+            border-radius: 50%;
+            border: 4px solid #a4e3e0;
+            transition: transform 0.3s ease;
+        }
+
+        .doctor-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .doctor-card:hover {
+            transform: translateY(-20px);
+            box-shadow: 0 12px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-outline-success:focus {
+            outline: 2px dashed #0c5443;
+            outline-offset: 3px;
+        }
+
+        .hover-effect {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .hover-effect:hover {
+            transform: translateY(-20px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
+        }
+
+        .service-img {
+            height: 300px;
+            width: 280px;
+            object-fit: cover;
+            border-radius: 12px;
+            transition: transform 0.3s ease;
+        }
     </style>
 </head>
 
 <body>
-    <div>
-        <!-- Top Info Header -->
-        <div class="bg-dark text-white py-2" style="height: 60px;">
-            <div class="container" style="max-width: 1600px;"> <!-- ADDED max-width container -->
-                <div class="row align-items-center pt-2">
-
-                    <!-- Left: Contact Info -->
-                    <div class="col-6 d-flex align-items-center">
-                        <i class="fas fa-phone-alt me-2"></i>
-                        <a href="#" class="text-white text-decoration-none small">Call: +91 9876543210</a>
-                    </div>
-
-                    <!-- Right: Social Media Icons -->
-                    <div class="col-6 d-flex justify-content-end align-items-center gap-3">
-                        <a href="#" class="text-white"><i class="fab fa-whatsapp"></i></a>
-                        <a href="#" class="text-white"><i class="fab fa-facebook-f"></i></a>
-                        <a href="#" class="text-white"><i class="fab fa-youtube"></i></a>
-                        <a href="#" class="text-white"><i class="fab fa-twitter"></i></a>
-                        <a href="#" class="text-white"><i class="fab fa-linkedin-in"></i></a>
-                        <a href="#" class="text-white"><i class="fab fa-instagram"></i></a>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Main Header -->
-        <div class="bg-white shadow-sm" style="top: 40px; height: 100px; z-index: 1000;">
-            <div class="container" style="max-width: 1600px;"> <!-- ADDED max-width container -->
-                <div class="row align-items-center h-100">
-
-                    <!-- Logo -->
-                    <div class="col-6 col-lg-2 d-flex align-items-center">
-                        <a href="{% url 'home' %}" class="d-flex align-items-center w-100">
-                            <img src="{% static 'logos/removebg.png' %}" alt="Logo" class="img-fluid p-1"
-                                style="height: 100px;width: 300px;">
-                        </a>
-                    </div>
-
-                    <!-- Toggler Icon for Mobile -->
-                    <div class="col-6 d-flex justify-content-end align-items-center d-lg-none py-2">
-                        <button class="btn btn-outline-secondary" type="button" data-bs-toggle="collapse"
-                            data-bs-target="#mainMenu" aria-expanded="false" aria-controls="mainMenu">
-                            <i class="fas fa-bars"></i>
-                        </button>
-                    </div>
-
-                    <!-- Menu Links -->
-                    <div class="col-12 col-lg-10 collapse d-lg-flex justify-content-lg-end align-items-center py-2"
-                        id="mainMenu">
-                        <ul class="list-unstyled d-flex flex-column flex-lg-row align-items-center m-0 p-0 gap-3">
-                            <li><a href="#home" class="text-dark text-decoration-none fw-bold">Home</a></li>
-                            <li><a href="#about" class="text-dark text-decoration-none fw-bold">About</a></li>
-                            <li><a href="#services" class="text-dark text-decoration-none fw-bold">Services</a></li>
-                            <li><a href="#doctors" class="text-dark text-decoration-none fw-bold">Doctors</a></li>
-                            <li><a href="#contact" class="text-dark text-decoration-none fw-bold">Contact</a></li>
-                            <li>
-                                <a href="{% url 'book_appointment' %}" class="btn fw-bold"
-                                    style="background-color: #265d4b; color: white;">
-                                    Appointment <i class="fas fa-arrow-right ms-1"></i>
-                                </a>
-                            </li>
-                        </ul>
-                    </div>
-
-                </div>
-            </div>
-        </div>
+    <!-- fixed loader-->
+    <div id="preloader"
+        style="position: fixed; width: 100%; height: 90vh; background: #ffffff; display: flex; align-items: center; justify-content: center; z-index: 9999; transition: opacity 0.5s ease-out;">
+        <img src="{% static 'images/loader.gif' %}" alt="Loading..." style="width: 150px; height: auto;">
     </div>
+    <div id="content" style="display: none;">
+        <!-- Header section -->
+        <section>
+            <!-- Top Info Header -->
+            <div class="bg-dark text-white py-2" style="height: 60px;">
+                <div class="container" style="max-width: 1600px;"> <!-- ADDED max-width container -->
+                    <div class="row align-items-center pt-2">
 
-    <!-- Hero Slider Section -->
-    <div id="heroCarousel" class="carousel slide carousel-fade h-full" data-bs-ride="carousel" data-bs-interval="3000">
-        <div class="carousel-inner h-full">
-            <!-- Slide 1 -->
-            <div class="carousel-item active h-full relative">
-                <img src="{% static 'images/banner6.jpg' %}" class="w-100 h-80 object-cover transform transition-transform duration-1000 ease-in-out page-flip" alt="Banner 1">
-            </div>
-    
-            <!-- Slide 2 -->
-            <div class="carousel-item h-full relative">
-                <img src="{% static 'images/banner2.jpg' %}" class="w-100 h-80 object-cover transform transition-transform duration-1000 ease-in-out page-flip" alt="Banner 2">
-            </div>
-    
-            <!-- Slide 3 -->
-            <div class="carousel-item h-full relative">
-                <img src="{% static 'images/banner1.jpg' %}" class="w-full h-64 object-cover transform transition-transform duration-1000 ease-in-out page-flip" alt="Banner 3">
-            </div>
-        </div>
-    </div>
+                        <!-- Left: Contact Info -->
+                        <div class="col-6 d-flex align-items-center">
+                            <i class="fas fa-phone-alt me-2"></i>
+                            <a href="#" class="text-white text-decoration-none small">Call: +91 9876543210</a>
+                        </div>
 
-    <!-- About Section -->
-    <section id="about" class="py-20 bg-gray-100">
-        <div class="container text-center">
-            <h2 class="text-4xl font-semibold mb-8">About Us</h2>
-            <p class="text-lg">We are a leading healthcare provider, offering a wide range of services to meet the needs of our patients. Our dedicated team of professionals ensures the best care possible.</p>
-        </div>
-    </section>
-
-    <!-- Services Section -->
-    <section id="services" class="py-20">
-        <div class="container text-center">
-            <h2 class="text-4xl font-semibold mb-8">Our Services</h2>
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-                <div class="service-item bg-white p-6 rounded-lg shadow-lg">
-                    <i class="fas fa-stethoscope text-3xl mb-4"></i>
-                    <h3 class="text-2xl mb-2">Consultation</h3>
-                    <p>Professional medical consultation for a variety of health issues and concerns.</p>
-                </div>
-                <div class="service-item bg-white p-6 rounded-lg shadow-lg">
-                    <i class="fas fa-pills text-3xl mb-4"></i>
-                    <h3 class="text-2xl mb-2">Pharmacy</h3>
-                    <p>On-site pharmacy offering prescription medications, health products, and more.</p>
-                </div>
-                <div class="service-item bg-white p-6 rounded-lg shadow-lg">
-                    <i class="fas fa-heartbeat text-3xl mb-4"></i>
-                    <h3 class="text-2xl mb-2">Emergency Care</h3>
-                    <p>24/7 emergency medical services for critical and urgent health issues.</p>
+                        <!-- Right: Social Media Icons -->
+                        <div class="col-6 d-flex justify-content-end align-items-center gap-3">
+                            <a href="#" class="text-white"><i class="fab fa-whatsapp"></i></a>
+                            <a href="#" class="text-white"><i class="fab fa-facebook-f"></i></a>
+                            <a href="#" class="text-white"><i class="fab fa-youtube"></i></a>
+                            <a href="#" class="text-white"><i class="fab fa-twitter"></i></a>
+                            <a href="#" class="text-white"><i class="fab fa-linkedin-in"></i></a>
+                            <a href="#" class="text-white"><i class="fab fa-instagram"></i></a>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
-    </section>
 
-    <!-- Doctors Section -->
-    <section id="doctors" class="py-20 bg-gray-100">
-        <div class="container text-center">
-            <h2 class="text-4xl font-semibold mb-8">Meet Our Doctors</h2>
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-                <div class="doctor-item bg-white p-6 rounded-lg shadow-lg">
-                    <img src="{% static 'images/doctor1.jpg' %}" alt="Doctor 1" class="w-32 h-32 rounded-full mx-auto mb-4">
-                    <h3 class="text-2xl mb-2">Dr. John Doe</h3>
-                    <p>Specialist in Cardiology</p>
-                </div>
-                <div class="doctor-item bg-white p-6 rounded-lg shadow-lg">
-                    <img src="{% static 'images/doctor2.jpg' %}" alt="Doctor 2" class="w-32 h-32 rounded-full mx-auto mb-4">
-                    <h3 class="text-2xl mb-2">Dr. Jane Smith</h3>
-                    <p>Specialist in Pediatrics</p>
-                </div>
-                <div class="doctor-item bg-white p-6 rounded-lg shadow-lg">
-                    <img src="{% static 'images/doctor3.jpg' %}" alt="Doctor 3" class="w-32 h-32 rounded-full mx-auto mb-4">
-                    <h3 class="text-2xl mb-2">Dr. Michael Brown</h3>
-                    <p>Specialist in Orthopedics</p>
+            <!-- Main Header -->
+            <div class="bg-white shadow-sm" style="top: 40px; height: 100px; z-index: 1000;">
+                <div class="container" style="max-width: 1600px;"> <!-- ADDED max-width container -->
+                    <div class="row align-items-center h-100">
+
+                        <!-- Logo -->
+                        <div class="col-6 col-lg-2 d-flex align-items-center">
+                            <a href="{% url 'home' %}" class="d-flex align-items-center w-100">
+                                <img src="{% static 'logos/removebg.png' %}" alt="Logo" class="img-fluid p-1"
+                                    style="height: 100px;width: 300px;">
+                            </a>
+                        </div>
+
+                        <!-- Toggler Icon for Mobile -->
+                        <div class="col-6 d-flex justify-content-end align-items-center d-lg-none py-2">
+                            <button class="btn btn-outline-secondary" type="button" data-bs-toggle="collapse"
+                                data-bs-target="#mainMenu" aria-expanded="false" aria-controls="mainMenu">
+                                <i class="fas fa-bars"></i>
+                            </button>
+                        </div>
+
+                        <!-- Menu Links -->
+                        <div class="col-12 col-lg-10 collapse d-lg-flex justify-content-lg-end align-items-center py-2"
+                            id="mainMenu">
+                            <ul class="list-unstyled d-flex flex-column flex-lg-row align-items-center m-0 p-0 gap-3">
+                                <li><a href="#home" class="text-dark text-decoration-none fw-bold">Home</a></li>
+                                <li><a href="#about" class="text-dark text-decoration-none fw-bold">About</a></li>
+                                <li><a href="#services" class="text-dark text-decoration-none fw-bold">Services</a></li>
+                                <li><a href="#doctors" class="text-dark text-decoration-none fw-bold">Doctors</a></li>
+                                <li><a href="#contact" class="text-dark text-decoration-none fw-bold">Contact</a></li>
+                                <li>
+                                    <a href="{% url 'book_appointment' %}" class="btn fw-bold"
+                                        style="background-color: #265d4b; color: white;">
+                                        Appointment <i class="fas fa-arrow-right ms-1"></i>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+
+                    </div>
                 </div>
             </div>
-        </div>
-    </section>
+        </section>
 
-    <!-- Contact Section -->
-    <section id="contact" class="py-20">
-        <div class="container text-center">
-            <h2 class="text-4xl font-semibold mb-8">Contact Us</h2>
-            <form action="#" method="post" class="max-w-lg mx-auto">
-                <input type="text" placeholder="Name" class="w-full p-3 mb-4 border border-gray-300 rounded-md" required>
-                <input type="email" placeholder="Email" class="w-full p-3 mb-4 border border-gray-300 rounded-md" required>
-                <textarea placeholder="Message" class="w-full p-3 mb-4 border border-gray-300 rounded-md" required></textarea>
-                <button type="submit" class="w-full bg-green-500 text-white p-3 rounded-md">Submit</button>
-            </form>
-        </div>
-    </section>
+        <!-- Hero Slider Section -->
+        <section>
+            <div id="heroCarousel" class="carousel slide carousel-fade h-full" data-bs-ride="carousel"
+                data-bs-interval="1000">
+                <div class="carousel-inner h-full">
+                    <!-- Slide 1 -->
+                    <div class="carousel-item active h-full relative">
+                        <img src="{% static 'images/banner6.jpg' %}" class="w-100 h-80 object-cover page-flip"
+                            alt="Banner 1">
+                    </div>
 
-    <!-- Footer Start -->
-    <footer style="background-color: #000000;" class="p-2">
-        <div class="container m-5" style="max-width: 2000px;">
-            <div class="row">
+                    <!-- Slide 2 -->
+                    <div class="carousel-item h-full relative">
+                        <img src="{% static 'images/banner2.jpg' %}" class="w-100 h-80 object-cover page-flip"
+                            alt="Banner 2">
+                    </div>
+
+                    <!-- Slide 3 -->
+                    <div class="carousel-item h-full relative">
+                        <img src="{% static 'images/banner1.jpg' %}" class="w-full h-64 object-cover page-flip"
+                            alt="Banner 3">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- health wellknowns tips -->
+        <section class="health-tips py-5 px-3 px-md-4 text-center bg-light bg-gradient">
+            <div class="container-fluid px-3 px-md-5">
+                <h2 class="display-5 fw-bold text-green mb-3">Health & Wellness Tips</h2>
+
+                <div class="row g-4">
+                    <div class="col-md-6 col-lg-4">
+                        <div class="tip-box p-4 bg-white rounded-4 shadow-sm h-100"
+                            style="background-color: rgb(216, 246, 239)!important;">
+                            <h4 class="text-success fw-bold">Healthy Eating</h4>
+                            <p class="paragraph-black">A balanced diet keeps you fit and strong.</p>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6 col-lg-4">
+                        <div class="tip-box p-4 bg-white rounded-4 shadow-sm h-100"
+                            style="background-color: rgb(227, 251, 247)!important;">
+                            <h4 class="text-success fw-bold">Daily Exercise</h4>
+                            <p class="paragraph-black">Regular physical activity boosts overall health.</p>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6 col-lg-4">
+                        <div class="tip-box p-4 bg-white rounded-4 shadow-sm h-100"
+                            style="background-color: rgb(227, 251, 247)!important;">
+                            <h4 class="fw-bold text-success">Quality Sleep</h4>
+                            <p class="paragraph-black">Good sleep is key to mental and physical well-being.</p>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6 col-lg-4">
+                        <div class="tip-box p-4 bg-white rounded-4 shadow-sm h-100"
+                            style="background-color: rgb(227, 251, 247)!important;">
+                            <h4 class="fw-bold text-success">Hydration</h4>
+                            <p class="paragraph-black">Drinking water throughout the day improves energy and focus.</p>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6 col-lg-4">
+                        <div class="tip-box p-4 bg-white rounded-4 shadow-sm h-100"
+                            style="background-color: rgb(227, 251, 247)!important;">
+                            <h4 class="fw-bold text-success">Mental Health</h4>
+                            <p class="paragraph-black">Mindfulness and stress management are key for emotional balance.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6 col-lg-4">
+                        <div class="tip-box p-4 bg-white rounded-4 shadow-sm h-100"
+                            style="background-color: rgb(227, 251, 247)!important;">
+                            <h4 class="fw-bold text-success">Hygiene</h4>
+                            <p class="paragraph-black">Good hygiene prevents illness and supports overall wellness.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Services Section -->
+        <section class="our-services py-5 px-3 px-md-4 bg-light text-center">
+            <div class="container-fluid px-3 px-md-4">
+                <h2 class="display-5 fw-bold mb-5 text-green" style="font-family: 'Poppins', sans-serif;">
+                    Our Services
+                </h2>
+
+                <div class="row g-4 justify-content-center">
+                    <!-- Example Service Card -->
+                    <div class="col-sm-12 col-md-6 col-lg-3">
+                        <div class="service-box p-4 bg-white rounded-4 shadow-sm h-100 hover-effect">
+                            <img src="{% static 'images/img3.jpg' %}" alt="General Checkup" class="service-img mb-3">
+                            <h5 class="fw-bold heading-black">General Checkup</h5>
+                            <p class="text-muted mb-0 paragraph-black">Routine health exams by experienced
+                                professionals.</p>
+                        </div>
+                    </div>
+
+                    <!-- Repeat similar cards with different images -->
+                    <div class="col-sm-12 col-md-6 col-lg-3">
+                        <div class="service-box p-4 bg-white rounded-4 shadow-sm h-100 hover-effect">
+                            <img src="{% static 'images/img2.jpg' %}" class="service-img mb-3" alt="Qualified Doctors">
+                            <h5 class="fw-bold heading-black">Book Appointment</h5>
+                            <p class="text-muted mb-0 paragraph-black">Easy online booking with your preferred doctor.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="col-sm-12 col-md-6 col-lg-3">
+                        <div class="service-box p-4 bg-white rounded-4 shadow-sm h-100 hover-effect">
+                            <img src="{% static 'images/emergency_services.jpg' %}" alt="Emergency Care"
+                                class="service-img mb-3">
+                            <h5 class="fw-bold heading-black">Emergency Care</h5>
+                            <p class="text-muted mb-0 paragraph-black">24/7 emergency services with quick response.</p>
+                        </div>
+                    </div>
+
+                    <div class="col-sm-12 col-md-6 col-lg-3">
+                        <div class="service-box p-4 bg-white rounded-4 shadow-sm h-100 hover-effect">
+                            <img src="{% static 'images/img1.jpg' %}" class="service-img mb-3" alt="Secure and Private"
+                                style="height: 300px; object-fit: cover;">
+                            <h5 class="fw-bold heading-black">Heart Care</h5>
+                            <p class="text-muted mb-0 paragraph-black">Advanced cardiac diagnostics and treatment.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!--Meet Our Doctors section -->
+        <section class="meet-doctors py-5 px-3 px-md-4 bg-white text-center">
+            <div class="container-fluid px-3 px-md-5">
+                <h2 class="display-5 fw-bold mb-5 text-green" style="font-family: 'Poppins', sans-serif;">
+                    Meet Our Doctors
+                </h2>
+
+                <div class="row g-4 justify-content-center">
+                    <!-- Doctor Card -->
+                    <div class="col-sm-12 col-md-6 col-lg-3">
+                        <div class="doctor-card p-4 h-100 shadow-sm bg-white rounded-4 transition-all"
+                            style="background-color: rgb(227, 251, 247)!important;">
+                            <img src="{% static 'doctor_profile/doctor_profile_img1.jpeg' %}" alt="Dr. Sarah Lee"
+                                class="doctor-img mb-3">
+                            <h5 class="fw-bold heading-black mb-1">Dr. Sarah Lee</h5>
+                            <p class="text-muted mb-3 paragraph-black">Cardiologist</p>
+                            <a href="#" class="btn btn-outline-success btn-sm">Book Appointment</a>
+                        </div>
+                    </div>
+
+                    <div class="col-sm-12 col-md-6 col-lg-3">
+                        <div class="doctor-card p-4 h-100 shadow-sm bg-white rounded-4 transition-all"
+                            style="background-color: rgb(227, 251, 247)!important;">
+                            <img src="{% static 'doctor_profile/doctor_profile_img2.jpeg' %}" alt="Dr. Ahmed Khan"
+                                class="doctor-img mb-3">
+                            <h5 class="fw-bold mb-1 heading-black">Dr. Ahmed Khan</h5>
+                            <p class="text-muted mb-3 paragraph-black">Orthopedic Surgeon</p>
+                            <a href="#" class="btn btn-outline-success btn-sm">Book Appointment</a>
+                        </div>
+                    </div>
+
+                    <div class="col-sm-12 col-md-6 col-lg-3">
+                        <div class="doctor-card p-4 h-100 shadow-sm bg-white rounded-4 transition-all"
+                            style="background-color: rgb(227, 251, 247)!important;">
+                            <img src="{% static 'doctor_profile/doctor_profile_img3.jpeg' %}" alt="Dr. Emily Chen"
+                                class="doctor-img mb-3">
+                            <h5 class="fw-bold mb-1 heading-black">Dr. Emily Chen</h5>
+                            <p class="text-muted mb-3 paragraph-black">Pediatrician</p>
+                            <a href="#" class="btn btn-outline-success btn-sm">Book Appointment</a>
+                        </div>
+                    </div>
+
+                    <div class="col-sm-12 col-md-6 col-lg-3">
+                        <div class="doctor-card p-4 h-100 shadow-sm bg-white rounded-4 transition-all"
+                            style="background-color: rgb(227, 251, 247)!important;">
+                            <img src="{% static 'doctor_profile/doctor_profile_img4.jpeg' %}" alt="Dr. James Patel"
+                                class="doctor-img mb-3">
+                            <h5 class="fw-bold mb-1 heading-black">Dr. James Patel</h5>
+                            <p class="text-muted mb-3 paragraph-black">Dermatologist</p>
+                            <a href="#" class="btn btn-outline-success btn-sm">Book Appointment</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- what our patients say section -->
+        <section class="testimonials py-5 px-3 px-md-4 text-center bg-light bg-gradient">
+            <div class="container-fluid px-3 px-md-5">
+                <h2 class="display-5 mb-5 fw-bold text-green" style="font-family: 'Poppins', sans-serif;">What Our
+                    Patients Say</h2>
+
+                <div class="row g-4">
+                    <!-- Testimonial 1 -->
+                    <div class="col-sm-12 col-md-6 col-lg-3">
+                        <div class="card h-100 shadow-sm border-0 rounded-4 testimonial-card">
+                            <img src="{% static 'images/img4.jpg' %}" class="card-img-top rounded-top-4"
+                                alt="Jane Doe testimonial image" style="height: 250px; object-fit: cover;">
+                            <div class="card-body">
+                                <blockquote class="blockquote mb-0">
+                                    <p>"The booking process was so easy and convenient. Highly recommend
+                                        DocAppointment!"</p>
+                                    <footer class="blockquote-footer">Jane Doe</footer>
+                                </blockquote>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Testimonial 2 -->
+                    <div class="col-sm-12 col-md-6 col-lg-3">
+                        <div class="card h-100 shadow-sm border-0 rounded-4 testimonial-card">
+                            <img src="{% static 'images/img5.jpg' %}" class="card-img-top rounded-top-4"
+                                alt="John Smith testimonial image" style="height: 250px; object-fit: cover;">
+                            <div class="card-body">
+                                <blockquote class="blockquote mb-0">
+                                    <p>"Professional and friendly doctors. My experience was top-notch."</p>
+                                    <footer class="blockquote-footer">John Smith</footer>
+                                </blockquote>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Testimonial 3 -->
+                    <div class="col-sm-12 col-md-6 col-lg-3">
+                        <div class="card h-100 shadow-sm border-0 rounded-4 testimonial-card">
+                            <img src="{% static 'images/img6.jpg' %}" class="card-img-top rounded-top-4"
+                                alt="Emily Johnson testimonial image" style="height: 250px; object-fit: cover;">
+                            <div class="card-body">
+                                <blockquote class="blockquote mb-0">
+                                    <p>"Safe and secure. I felt very comfortable sharing my information."</p>
+                                    <footer class="blockquote-footer">Emily Johnson</footer>
+                                </blockquote>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Testimonial 4 (NEW) -->
+                    <div class="col-sm-12 col-md-6 col-lg-3">
+                        <div class="card h-100 shadow-sm border-0 rounded-4 testimonial-card">
+                            <img src="{% static 'images/img7.png' %}" class="card-img-top rounded-top-4"
+                                alt="Michael Lee testimonial image" style="height: 250px; object-fit: cover;">
+                            <div class="card-body">
+                                <blockquote class="blockquote mb-0">
+                                    <p>"Fast response time and excellent care. I’m grateful for this service."</p>
+                                    <footer class="blockquote-footer">Michael Lee</footer>
+                                </blockquote>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Why Choose Us Section -->
+        <section class="why-choose-us py-5 px-3 px-md-4 text-center" style="background: #f1f8f4;">
+            <div class="container-fluid px-3 px-md-5">
+                <h2 class="display-5 fw-bold mb-5 text-green" style="font-family: 'Poppins', sans-serif;">
+                    Why Choose Us?
+                </h2>
+
+                <div class="row g-4 justify-content-center">
+                    <!-- Card 1: Experienced Doctors -->
+                    <div class="col-sm-12 col-md-6 col-lg-3">
+                        <div class="feature-box p-4 bg-white rounded-4 shadow h-100 hover-lift">
+                            <i class="fas fa-user-md mb-3" style="font-size: 2.5rem; color: #ff7043;"></i>
+                            <h4 class="fw-bold mb-3 fs-5 heading-black">Experienced Doctors</h4>
+                            <p class="text-muted mb-0">Our specialists have years of expertise in their fields, ensuring
+                                the best care for you and your family.</p>
+                        </div>
+                    </div>
+
+                    <!-- Card 2: Latest Technology -->
+                    <div class="col-sm-12 col-md-6 col-lg-3">
+                        <div class="feature-box p-4 bg-white rounded-4 shadow h-100 hover-lift">
+                            <i class="fas fa-microscope mb-3" style="font-size: 2.5rem; color: #4caf50;"></i>
+                            <h4 class="fw-bold mb-3 fs-5 heading-black">Latest Technology</h4>
+                            <p class="text-muted mb-0">We use the most up-to-date equipment and techniques for precise
+                                diagnoses and treatments.</p>
+                        </div>
+                    </div>
+
+                    <!-- Card 3: Compassionate Care -->
+                    <div class="col-sm-12 col-md-6 col-lg-3">
+                        <div class="feature-box p-4 bg-white rounded-4 shadow h-100 hover-lift">
+                            <i class="fas fa-heartbeat mb-3" style="font-size: 2.5rem; color: #ffeb3b;"></i>
+                            <h4 class="fw-bold mb-3 fs-5 heading-black">Compassionate Care</h4>
+                            <p class="text-muted mb-0">We prioritize your comfort and well-being with personalized care
+                                every visit.</p>
+                        </div>
+                    </div>
+
+                    <!-- ✅ Card 4: 24/7 Support -->
+                    <div class="col-sm-12 col-md-6 col-lg-3">
+                        <div class="feature-box p-4 bg-white rounded-4 shadow h-100 hover-lift">
+                            <i class="fas fa-headset mb-3" style="font-size: 2.5rem; color: #2196f3;"></i>
+                            <h4 class="fw-bold mb-3 fs-5 heading-black">24/7 Support</h4>
+                            <p class="text-muted mb-0">Our support team is available around the clock to assist you with
+                                any inquiries or emergencies.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- Footer Start -->
+        <footer style="background-color: rgb(24, 24, 48);" class="p-2">
+            <div class="row m-4">
                 <!-- Logo and Contact -->
-                <div class="col-12 col-md-4 mb-6">
-                    <img src="{% static 'logos/logo2.png' %}" alt="AppointMe Logo" class="mb-4 p-2" style="width: 250px; border-radius: 22px;">
+                <div class="col-12 col-md-4 mb-4">
+                    <img src="{% static 'logos/logo2.png' %}" alt="AppointMe Logo" class="mb-4 p-2"
+                        style="width: 250px; border-radius: 22px;">
                 </div>
-        
+
                 <!-- Action Buttons -->
-                <div class="col-12 col-md-4 mb-6">
+                <div class="col-12 col-md-4 mb-4">
                     <h5 class="text-white fw-bold mb-4">Quick Actions</h5>
                     <div class="d-grid gap-3">
-                        <a href="#" class="btn btn-outline-success text-white hover:shadow-lg transition hover:bg-success hover:text-white">Download Test Report</a>
-                        <a href="#" class="btn btn-success hover:shadow-lg transition hover:bg-success-dark hover:text-white">Book Home Collection</a>
-                        <a href="{% url 'book_appointment' %}" class="btn btn-success hover:shadow-lg transition hover:bg-success-dark hover:text-white">Doctor Appointment</a>
-                        <a href="#" class="btn btn-success hover:shadow-lg transition hover:bg-success-dark hover:text-white">Book Your Franchise</a>
-                        <a href="#" class="btn btn-success hover:shadow-lg transition hover:bg-success-dark hover:text-white">Upload Prescription</a>
+                        <a href="#"
+                            class="btn btn-success hover:shadow-lg transition hover:bg-success-dark hover:text-white"
+                            style="width: 200px;">Our Services</a>
+                        <a href="{% url 'book_appointment' %}"
+                            class="btn btn-success hover:shadow-lg transition hover:bg-success-dark hover:text-white"
+                            style="width: 200px;">Book Appointment</a>
+                        <a href="#"
+                            class="btn btn-success hover:shadow-lg transition hover:bg-success-dark hover:text-white"
+                            style="width: 200px;">Doctors Info</a>
+                        <a href="#"
+                            class="btn btn-success hover:shadow-lg transition hover:bg-success-dark hover:text-white"
+                            style="width: 200px;">Give Feedback</a>
                     </div>
                 </div>
 
-                <div class="col-12 col-md-4 mb-6">
+                <div class="col-12 col-md-4 mb-4">
                     <h5 class="text-white fw-bold mb-4">Contact Info</h5>
                     <ul class="list-unstyled text-sm">
                         <li class="mb-3 d-flex align-items-start">
-                            <i class="fas fa-phone-alt me-2 text-white"></i> <span class="text-white">+91 9876543210</span>
+                            <i class="fas fa-phone-alt me-2 text-white"></i> <span class="text-white">+91
+                                9876543210</span>
                         </li>
                         <li class="mb-3 d-flex align-items-start">
-                            <i class="fas fa-envelope me-2 text-white"></i> <span class="text-white">Mail Us: Iinfo@appointme.com</span>
+                            <i class="fas fa-envelope me-2 text-white"></i> <span class="text-white">Mail Us:
+                                Iinfo@appointme.com</span>
                         </li>
                         <li class="mb-3 d-flex align-items-start">
-                            <i class="fas fa-map-marker-alt me-2 text-white"></i> <span class="text-white">Kolkata, India</span>
+                            <i class="fas fa-map-marker-alt me-2 text-white"></i> <span class="text-white">Kolkata,
+                                India</span>
                         </li>
                         <li class="mb-3 d-flex align-items-start">
-                            <i class="fas fa-clock me-2 text-white"></i> 
+                            <i class="fas fa-clock me-2 text-white"></i>
                             <span class="text-white">6AM - 7PM (Mon-Sat) <br> 6AM - 2PM (Sunday)</span>
                         </li>
                     </ul>
                 </div>
             </div>
-        </div>
-        
-        <!-- Bottom Footer -->
-        <div class="row bg-dark text-white text-center p-4">
-            <div class="col-12 col-md-6">
-                2024 Doctor Appointments Portal
+            <!-- Bottom Footer -->
+            <div class="row bg-dark text-white text-center p-4">
+                <div class="col-12 col-md-6">
+                    2024 Doctor Appointments Website. All Rights Reserved.
+                    <!-- <br> Designed by <a href="#" class="text-white">Anuradha Hazra</a> 
+                    <br> Developed by <a href="#" class="text-white">Ankita Baidya</a> -->
+                </div>
+                <div class="col-12 col-md-6 d-flex justify-content-end align-items-center gap-3">
+                    <a href="#" class="text-white">Privacy</a>
+                    <a href="#" class="text-white">Terms</a>
+                    <span class="fw-semibold">Follows Us On: </span>
+                    <a href="#" class="text-white"><i class="fab fa-whatsapp"></i></a>
+                    <a href="#" class="text-white"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#" class="text-white"><i class="fab fa-youtube"></i></a>
+                    <a href="#" class="text-white"><i class="fab fa-twitter"></i></a>
+                    <a href="#" class="text-white"><i class="fab fa-linkedin-in"></i></a>
+                    <a href="#" class="text-white"><i class="fab fa-instagram"></i></a>
+                </div>
             </div>
-            <div class="col-12 col-md-6 d-flex justify-content-end align-items-center gap-3">
-                <a href="#" class="text-white">Privacy</a>
-                <a href="#" class="text-white">Terms</a>
-                <span class="fw-semibold">Follows Us On: </span>
-                <a href="#" class="text-white"><i class="fab fa-whatsapp"></i></a>
-                <a href="#" class="text-white"><i class="fab fa-facebook-f"></i></a>
-                <a href="#" class="text-white"><i class="fab fa-youtube"></i></a>
-                <a href="#" class="text-white"><i class="fab fa-twitter"></i></a>
-                <a href="#" class="text-white"><i class="fab fa-linkedin-in"></i></a>
-                <a href="#" class="text-white"><i class="fab fa-instagram"></i></a>
-            </div>
-        </div>
-    </footer>
-<!-- Footer End -->
-
-
-<!-- Footer End -->
-
-      
-
-    <!-- Mobile Menu Script -->
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
-
+        </footer>
+        <!-- Footer End -->
+    </div>
+    <script>
+        window.onload = function () {
+            setTimeout(() => {
+                document.getElementById("preloader").style.opacity = "0";
+                setTimeout(() => {
+                    document.getElementById("preloader").style.display = "none";
+                    document.getElementById("content").style.display = "block";
+                }, 500); // Smooth fade-out
+            }, 1000); // GIF shows for 1.5 seconds
+        };
+    </script>
 </body>
 
 </html>
