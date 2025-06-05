@@ -9,8 +9,7 @@ urlpatterns = [
     # path('services', views.services, name='services'),
     # path('contact', views.contactUs, name='contact_us'),
     # path('test/home/', views.testHome, name='test_home'),
-    
-    path("book/new/appointment", views.bookAppointment, name="book_appointment"),
+
     path("home/", views.homePage, name='home'),
     path('login/', LoginView.as_view(template_name='login.html'), name='login'),
     path('logout/', LogoutView.as_view(next_page='login'), name='logout'), 
@@ -21,5 +20,7 @@ urlpatterns = [
     path('ajax/fetch/time', views.ajaxFetchTime, name='ajax_fetch_time_from_date'),
     path('ajax/fetch/appointment', views.ajaxFetchAppointment, name='ajax_fetch_appointment'),
     path('test/home/', views.testHome, name='test_home'),
-    path('book/appointment/', views.bookNewAppointment, name='book_new_appointment'),
+    path('book/appointment/', views.book_appointment, name='book_appointment'),
+    path('get-doctors/<int:spec_id>/', views.get_doctors_by_specialization, name='get_doctors_by_specialization'),
+    path('get-doctor-form/<int:doctor_id>/', views.get_doctor_form, name='get_doctor_form'),  
 ]

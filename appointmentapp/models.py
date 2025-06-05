@@ -9,6 +9,7 @@ class StatusEnum(models.TextChoices):
     CANCELLED = 'cancelled', 'Cancelled'
     RESCHEDULED = 'rescheduled', 'Rescheduled'
 
+
 class PatientBookAppointment(models.Model):
     appointment_date = models.DateField()
     appointment_time = models.TimeField()
@@ -39,6 +40,7 @@ class PatientBookAppointment(models.Model):
     def __str__(self):
         return f"{self.patient.username} - {self.doctor.username} on {self.appointment_date} at {self.appointment_time} status {self.status}"
 
+
 class DoctorAvailabilities(models.Model):
     doctor = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name='schedule')
@@ -57,6 +59,7 @@ class DoctorAvailabilities(models.Model):
 
     def __str__(self):
         return f"{self.doctor.username} - {self.date} from {self.start_time} to {self.end_time}"
+
 
 class DoctorSpecializations(models.Model):
     name = models.CharField(max_length=255)
@@ -78,6 +81,7 @@ class DoctorSpecializations(models.Model):
     def __str__(self):
         return self.name
 
+
 class UserDetails(models.Model):
     ROLE_CHOICES = [
         ('role_doctor', 'Role_Doctor'),
@@ -89,16 +93,19 @@ class UserDetails(models.Model):
     role = EnumField(choices=ROLE_CHOICES, default='role_patient')
     phone_number = models.TextField(max_length=20, null=True, blank=True)
     address = models.TextField(null=True, blank=True)
+    guardian_name = models.CharField(max_length=255, null=True)
     gender = EnumField(choices=[
         ('female', 'Female'),
         ('male', 'Male'),
         ('others', 'Others'),
-    ], null=True),
+    ], null=True, blank=True)
+
     status = EnumField(choices=[
         ('active', 'Active'),
         ('inactive', 'Inactive'),
         ('deleted', 'Deleted'),
     ], default='active')
+
     profile_pic = models.ImageField(
         upload_to='profile/', null=True, blank=True)
     patient_id = models.CharField(max_length=255, null=True)
@@ -106,7 +113,23 @@ class UserDetails(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        db_table = 'user_details'  # database table name
+        db_table = 'user_details'
 
     def __str__(self):
         return f"User: {self.user.username}, Role: {self.role}, Phone: {self.phone_number}"
+
+
+class Contact(models.Model):
+    name = models.CharField(max_length=255)
+    email = models.EmailField()
+    phone = models.CharField(max_length=20)
+    address = models.TextField(blank=True, null=True)
+    message = models.TextField()
+
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        db_table = 'user_contact'
+
+    def __str__(self):
+        return f"{self.name} - {self.email}"

@@ -1,0 +1,124 @@
+<form action="" method="post" id="appointment-form">
+    {% csrf_token %}
+    <input type="hidden" name="doctor_id" id="doctor_id" value="{{ doctor.id }}">
+
+    <!-- Doctor Full Name (Read-only Display) -->
+    <div class="form-outline mb-4">
+        <label class="form-label">Doctor Name</label>
+        <input type="text" class="form-control form-control-lg" value="{{ doctor.first_name }} {{ doctor.last_name }}"
+            readonly>
+    </div>
+
+
+    <select id="available_schedule_date" style="display: none;">
+        {% for records in doctor_schedule %}
+        <option value="{{records.id}}">{{records.date|date:'Y-m-d'}}</option>
+        {% endfor %}
+    </select>
+
+    <div class="row">
+        <div class="col-md-6 mb-4">
+            <div class="form-outline mb-4" id="datepicker-container">
+                <label class="form-label" for="datepicker">Appointment date <span style="color: red;">*</span></label>
+                <input type="text" id="datepicker" class="form-control form-control-lg" name="appointment_date"
+                    required />
+            </div>
+
+        </div>
+
+        <div class="col-md-6 mb-4">
+            <div class="form-outline">
+                <select class="form-control form-control-lg" name="appointment_time" id="appointment_time">
+                    <option value="">-select-</option>
+                </select>
+                <label class="form-label" for="appointment_time">Appointment time <span
+                        style="color: red;">*</span></label>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6 mb-4">
+            <select class="form-control form-control-lg" name="patient_type" id="js_patient_type">
+                <option value="">-select-</option>
+                <option value="new">New</option>
+                <option value="old">Old</option>
+            </select>
+            <label class="form-label">Patient Type <span style="color: red;">*</span></label>
+        </div>
+
+        <div class="col-md-6 mb-4">
+            <div class="form-outline" id="patient_email">
+                <input type="email" class="form-control form-control-lg" name="email" />
+                <label class="form-label">Email <span style="color: red;">*</span></label>
+            </div>
+
+            <div class="form-outline" id="patient_id" style="display: none;">
+                <input type="text" class="form-control form-control-lg" name="patient_id" />
+                <label class="form-label">Patient ID <span style="color: red;">*</span></label>
+            </div>
+        </div>
+    </div>
+
+    <div id="new_patient">
+        <div class="row">
+            <div class="col-md-6 mb-4">
+                <div class="form-outline">
+                    <input type="text" class="form-control form-control-lg" name="patient_first_name" />
+                    <label class="form-label">Patient First Name <span style="color: red;">*</span></label>
+                </div>
+            </div>
+
+            <div class="col-md-6 mb-4">
+                <div class="form-outline">
+                    <input type="text" class="form-control form-control-lg" name="patient_last_name" />
+                    <label class="form-label">Patient Last Name <span style="color: red;">*</span></label>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6 mb-4">
+                <select class="form-control form-control-lg" name="gender">
+                    <option value="">-select-</option>
+                    <option value="male">Male</option>
+                    <option value="female">Female</option>
+                    <option value="others">Others</option>
+                </select>
+                <label class="form-label">Gender <span style="color: red;">*</span></label>
+            </div>
+
+            <div class="col-md-6 mb-4">
+                <div class="form-outline">
+                    <input type="text" class="form-control form-control-lg" name="age" />
+                    <label class="form-label">Age <span style="color: red;">*</span></label>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6 mb-4">
+                <div class="form-outline">
+                    <input type="text" class="form-control form-control-lg" name="guardian_name" />
+                    <label class="form-label">Guardian Name <span style="color: red;">*</span></label>
+                </div>
+            </div>
+
+            <div class="col-md-6 mb-4">
+                <div class="form-outline">
+                    <input type="text" class="form-control form-control-lg" name="mobile_number" />
+                    <label class="form-label">Mobile Number <span style="color: red;">*</span></label>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-outline mb-4">
+            <input type="text" class="form-control form-control-lg" name="address" style="height: 50px;" />
+            <label class="form-label">Address <span style="color: red;">*</span></label>
+        </div>
+    </div>
+
+    <div class="d-flex justify-content-end mt-4">
+        <button type="submit" class="btn btn-warning btn-lg">Book Appointment</button>
+    </div>
+</form>

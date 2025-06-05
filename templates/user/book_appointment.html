@@ -11,14 +11,15 @@
 <style>
     .specialization-card {
         display: flex;
-        align-items: flex-start;
+        align-items: center;
         border: 1px solid #ccc;
         border-radius: 8px;
-        padding: 12px 10px;
+        padding: 10px 12px;
         background-color: #fff;
         cursor: pointer;
         transition: 0.2s ease-in-out;
-        min-height: 80px;
+        min-height: 60px;
+        height: 100%;
     }
 
     .specialization-card:hover {
@@ -28,16 +29,17 @@
     }
 
     .specialization-card i {
-        font-size: 22px;
-        margin-right: 15px;
-        margin-top: 3px;
+        font-size: 20px;
+        margin-right: 12px;
+        margin-top: 2px;
         color: #1b2c3e;
+        flex-shrink: 0;
     }
 
     .form-check-input {
-        margin-right: 15px;
-        margin-left: 5px;
-        margin-top: 5px;
+        margin-right: 12px;
+        margin-left: 4px;
+        margin-top: 2px;
     }
 
     .specialization-text {
@@ -46,93 +48,111 @@
     }
 
     .specialization-text .title {
-        font-size: 16px;
+        font-size: 15px;
         font-weight: 600;
-        margin-bottom: 3px;
-    }
-
-    .specialization-text .description {
-        font-size: 13px;
-        color: #666;
-    }
-
-    .nav-tabs {
-        display: none;
-    }
-
-    /* Slide in/out animations */
-    .tab-content {
-        position: relative;
-        overflow: hidden;
-    }
-
-    .slide-in-right {
-        animation: slideInRight 0.4s forwards;
-    }
-
-    .slide-in-left {
-        animation: slideInLeft 0.4s forwards;
     }
 
     @keyframes slideInRight {
         from {
-            transform: translateX(100%);
             opacity: 0;
+            transform: translateX(100%);
         }
 
         to {
-            transform: translateX(0);
             opacity: 1;
+            transform: translateX(0);
         }
     }
 
     @keyframes slideInLeft {
         from {
-            transform: translateX(-100%);
             opacity: 0;
+            transform: translateX(-100%);
         }
 
         to {
-            transform: translateX(0);
             opacity: 1;
+            transform: translateX(0);
         }
     }
+
+    .slide-in-right {
+        animation: slideInRight 0.4s ease;
+    }
+
+    .slide-in-left {
+        animation: slideInLeft 0.4s ease;
+    }
+
+    .ui-datepicker {
+        background: #fff !important;
+        border: 1px solid #ccc !important;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        color: #000 !important;
+        opacity: 1 !important;
+        z-index: 1050 !important;
+    }
 </style>
+
+
 {% endblock %}
 
 {% block content %}
-<div class="container py-5">
-    <h1>Book an Appointment</h1>
-</div>
-<div class="container py-5 shadow-lg" style="max-height: 500px;">
-    <div class="tab-content">
-        <!-- Step 1: Select Specialization -->
-        <div class="tab-pane fade show active m-2" id="step1" role="tabpanel">
-            <h3>Select Specialization</h3>
-            <div class="row gx-3 gy-3">
-                {% for spec in specializations %}
-                <div class="col-md-3">
-                    <label class="specialization-card w-100 shadow-sm">
-                        <input type="radio" name="specialization" value="{{ spec.id }}" class="form-check-input"
-                            onchange="handleSelect(this, '{{ spec.id }}', '{{ spec.name }}')">
-                        <i class="fas fa-eye"></i>
-                        <div class="specialization-text">
-                            <span class="title">{{ spec.name }}</span>
-                            <span class="description">{{ spec.description }}</span>
-                        </div>
-                    </label>
+<div class="py-5">
+    <div class="position-relative text-white text-center py-5">
+        <img src="https://i.pinimg.com/736x/5c/27/5a/5c275aeec42bcfe2229eb1e103c08d6e.jpg" class="img-fluid w-100"
+            style="height: 250px; object-fit: cover; object-position: top;" alt="Book Appointment Banner">
+
+        <h4 class="position-absolute top-50 start-50 translate-middle fw-bold display-5" style="color: #1b2c3e;">
+            Book Appointment
+        </h4>
+    </div>
+
+    <div class="container py-1 shadow-lg mb-5" style="height: 100%;">
+        <div class="tab-content">
+            <div class="m-4" id="step1">
+                <h3>Select Specialization</h3>
+                <div class="row gx-3 gy-3">
+                    {% for spec in specializations %}
+                    <div class="col-md-3 col-sm-6">
+                        <label class="specialization-card w-100 shadow-sm">
+                            <input type="radio" name="specialization" value="{{ spec.id }}" class="form-check-input"
+                                onchange="handleSelect(this, '{{ spec.id }}', '{{ spec.name }}')">
+                            <i class="fas fa-eye"></i>
+                            <div class="specialization-text">
+                                <span class="title">{{ spec.name }}</span>
+                            </div>
+                        </label>
+                    </div>
+                    {% endfor %}
                 </div>
-                {% endfor %}
             </div>
-        </div>
 
-        <div class="tab-pane fade m-5" id="step2" role="tabpanel">
-            <h3 id="selected-spec-title">Doctors for:</h3>
-            <div id="doctor-list" class="row"></div>
+            <!-- Step 2 -->
+            <div class="m-5 d-none" id="step2">
+                <h3 id="selected-spec-title">Doctors for:</h3>
+                <div id="doctor-list" class="row"></div>
 
-            <div class="mt-4">
-                <button class="btn btn-warning" onclick="goToStep1()">← Back</button>
+                <div class="mt-4">
+                    <button class="btn btn-warning" onclick="goToStep('step2', 'step1', 'slide-in-left')">←
+                        Back</button>
+                </div>
             </div>
+            <!-- Step 3: Confirm Selected Doctor -->
+            <div class="m-5 d-none" id="step3">
+                <h3>Confirm Doctor</h3>
+                <p>You have selected: <strong id="selected-doctor-name"></strong></p>
+
+                <div id="doctor-form-container"></div> <!-- Add this -->
+
+                <div class="mt-4">
+                    <button class="btn btn-warning" onclick="goToStep('step3', 'step2', 'slide-in-left')">←
+                        Back</button>
+                    <button class="btn btn-success">Continue</button>
+                </div>
+            </div>
+
+
         </div>
     </div>
 </div>
@@ -141,47 +161,147 @@
 {% block javascript %}
 {{ block.super }}
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://code.jquery.com/ui/1.14.1/jquery-ui.min.js"></script>
 
 <script>
     function handleSelect(radio, specId, specName) {
         if (radio.checked) {
-            document.getElementById("selected-spec-title").innerText = "Doctors for: " + specName;
-            const doctorList = document.getElementById("doctor-list");
-            doctorList.innerHTML = `
-                <div class="col-md-4">
-                    <div class="card shadow-sm p-3">
-                        <h5>Dr. A (${specName})</h5>
-                        <p>MBBS, MD - 5 years experience</p>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="card shadow-sm p-3">
-                        <h5>Dr. B (${specName})</h5>
-                        <p>MBBS, MS - 8 years experience</p>
-                    </div>
-                </div>
-            `;
+            fetch(`/get-doctors/${specId}/`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error("Network response was not ok");
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    const doctorList = document.getElementById("doctor-list");
+                    document.getElementById("selected-spec-title").innerText = "Doctors for: " + specName;
 
-            const step1 = document.getElementById("step1");
-            const step2 = document.getElementById("step2");
-            step1.classList.remove("show", "active");
-            step2.classList.add("show", "active", "slide-in-right");
+                    doctorList.innerHTML = data.html || `<p>No doctors found for this specialization.</p>`;
+
+                    const step1 = document.getElementById("step1");
+                    const step2 = document.getElementById("step2");
+
+                    goToStep('step1', 'step2', 'slide-in-right');
+                })
+                .catch(error => {
+                    console.error("Error fetching doctors:", error);
+                    alert("Failed to load doctors. Please try again later.");
+                });
+        }
+    }
+
+    function goToStep(currentStepId, nextStepId, animation = 'slide-in-left') {
+        const currentStep = document.getElementById(currentStepId);
+        const nextStep = document.getElementById(nextStepId);
+
+        if (currentStep && nextStep) {
+            currentStep.classList.add("d-none");
+            nextStep.classList.remove("d-none");
+            nextStep.classList.add(animation);
 
             setTimeout(() => {
-                step2.classList.remove("slide-in-right");
+                nextStep.classList.remove(animation);
             }, 400);
         }
     }
 
-    function goToStep1() {
-        const step1 = document.getElementById("step1");
-        const step2 = document.getElementById("step2");
-        step2.classList.remove("show", "active");
-        step1.classList.add("show", "active", "slide-in-left");
+    function selectDoctor(name, id) {
+        console.log(`Selected Doctor: ${name} ID: ${id}`);
+        document.getElementById("selected-doctor-name").innerText = name;
 
-        setTimeout(() => {
-            step1.classList.remove("slide-in-left");
-        }, 400);
+        fetch(`/get-doctor-form/${id}/`)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                return response.text();
+            })
+            .then(html => {
+                document.getElementById("doctor-form-container").innerHTML = html;
+
+                try {
+                    rebindAppointmentJS();
+                } catch (err) {
+                    console.error('Error in rebindAppointmentJS:', err);
+                }
+
+                goToStep('step2', 'step3', 'slide-in-right');
+            })
+            .catch(error => {
+                console.error('Error loading form:', error);
+                alert('Failed to load appointment form. Please try again.');
+            });
+    }
+
+
+</script>
+<script>
+    function rebindAppointmentJS() {
+        $("#datepicker").datepicker({
+            appendTo: "#datepicker-container",
+            beforeShowDay: function (date) {
+                var enabledDates = [];
+                $('#available_schedule_date option').each(function () {
+                    var optionText = $(this).text();
+                    enabledDates.push(new Date(optionText));
+                });
+                for (var i = 0; i < enabledDates.length; i++) {
+                    if (date.getFullYear() === enabledDates[i].getFullYear() &&
+                        date.getMonth() === enabledDates[i].getMonth() &&
+                        date.getDate() === enabledDates[i].getDate()) {
+                        return [true, ""];
+                    }
+                }
+                return [false, ""];
+            }
+        });
+
+        $('body').on('change', '#datepicker', function () {
+            var doc_id = $("#doctor_id").val();
+            console.log(doc_id);
+            $.ajax({
+                url: "{% url 'ajax_fetch_time_from_date' %}",
+                type: "GET",
+                data: {
+                    appointment_date: $(this).val(),
+                    doctor_id: doc_id
+                },
+                dataType: 'json',
+                success: function (response) {
+                    var html = '<option value="">-select-</option>';
+                    if (response.status === 'success' && response.schedule) {
+                        var startTime = response.schedule.start_time;
+                        var endTime = response.schedule.end_time;
+                        var start = new Date("1970-01-01T" + startTime + ":00Z");
+                        var end = new Date("1970-01-01T" + endTime + ":00Z");
+                        for (var time = start; time < end; time.setMinutes(time.getMinutes() + 30)) {
+                            var hour = time.getUTCHours().toString().padStart(2, '0');
+                            var minute = time.getUTCMinutes().toString().padStart(2, '0');
+                            var timeString = hour + ':' + minute;
+                            html += `<option value="${timeString}">${timeString}</option>`;
+                        }
+                        $('#appointment_time').html(html);
+                    }
+                },
+                error: function () {
+                    $('#appointment_time').html('<option value="">Error</option>');
+                }
+            });
+        });
+
+        $('body').on('change', '#js_patient_type', function () {
+            if ($(this).val() === 'old') {
+                $('#new_patient').hide();
+                $('#patient_email').hide();
+                $('#patient_id').show();
+            } else {
+                $('#new_patient').show();
+                $('#patient_email').show();
+                $('#patient_id').hide();
+            }
+        });
     }
 </script>
 {% endblock %}

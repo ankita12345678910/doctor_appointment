@@ -1,0 +1,21 @@
+{% load static %}
+
+{% for doctor in doctors %}
+<div class="col-md-4 mb-4">
+    <label class="card shadow-sm p-3 text-center w-100 h-100 position-relative" style="cursor: pointer;">
+        <input type="radio" name="selected_doctor" value="{{ doctor.id }}"
+            class="form-check-input position-absolute top-0 start-0 m-2"
+            onclick="selectDoctor('{{ doctor.first_name }} {{ doctor.last_name }}', '{{ doctor.id }}')">
+
+        <img src="{% if doctor.details.profile_pic %}{{ doctor.details.profile_pic.url }}{% else %}{% static 'images/default_doctor_avatar.jpg' %}{% endif %}"
+            class="img-fluid rounded-circle mb-3 mx-auto"
+            style="width: 120px; height: 120px; object-fit: cover; display: block;">
+
+        <h5 class="mb-1">{{ doctor.first_name }} {{ doctor.last_name }}</h5>
+        <p class="mb-1 text-muted">{{ doctor.email }}</p>
+        <p class="text-secondary">5 years experience</p>
+    </label>
+</div>
+{% empty %}
+<p>No doctors found for this specialization.</p>
+{% endfor %}
