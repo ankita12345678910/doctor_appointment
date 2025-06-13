@@ -2,8 +2,7 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 from django.db import connection
-from .models import PatientBookAppointment
-from .models import DoctorAvailabilities, DoctorSpecializations, UserDetails
+from .models import PatientBookAppointment, DoctorAvailabilities, DoctorSpecializations, UserDetails
 import uuid
 from django.http import HttpResponse
 from datetime import datetime
@@ -11,10 +10,11 @@ from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from django.shortcuts import render, get_object_or_404
 from django.db import transaction
+from django.contrib.auth.views import LoginView
+from django.urls import reverse_lazy
+
 
 # Homepage actions
-
-
 def homePage(request):
     return render(request, "home/homepage.html")
 
@@ -26,10 +26,34 @@ def aboutUs(request):
 def testHome(request):
     return render(request, "home/test_home.html")
 
+
+# login Actions
+class customLoginView(LoginView):
+    template_name = 'login.html'
+
+    def get_success_url(self):
+        user = self.request.user
+        try:
+            role = user.details.role
+        except UserDetails.DoesNotExist:
+            role = None
+
+        if role == 'role_doctor':
+            return reverse_lazy('doctor_dashboard')
+        elif role == 'role_admin':
+            return reverse_lazy('admin_dashboard')
+        else:
+            # or raise an error / send to default page
+            return reverse_lazy('home')
+
+# Admin Action
+@login_required
+def adminDashboard(request):
+    return render(request, 'admin/admin_dashboard.html', {
+        'title': 'Dashboard',
+    })
+
 # doctor actions
-# ________________________________________________________________________________
-
-
 @login_required
 def doctor_dashboard(request):
     return render(request, 'doctor/doctor_dashboard.html')
