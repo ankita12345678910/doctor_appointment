@@ -1,4 +1,4 @@
-{% extends 'base.html' %}
+{% extends 'admin/admin_dashboard.html' %}
 
 {% block content %}
 <div class="min-h-screen bg-gray-100 p-6">
@@ -28,10 +28,10 @@
           <td class="px-6 py-4">{{ spec.name }}</td>
           <td class="px-6 py-4">
             <div class="flex space-x-3">
-              <a href="{% url 'edit_specialization' spec.id %}" class="text-blue-500 hover:text-blue-700">
+              <a href="#" class="text-blue-500 hover:text-blue-700">
                 <i class="fas fa-edit"></i>
               </a>
-              <a href="{% url 'delete_specialization' spec.id %}" class="text-red-500 hover:text-red-700"
+              <a href="#" class="text-red-500 hover:text-red-700"
                  onclick="return confirm('Delete this specialization?');">
                 <i class="fas fa-trash-alt"></i>
               </a>
@@ -52,7 +52,7 @@
 <div id="addModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
   <div class="bg-white rounded-lg w-full max-w-md shadow-lg p-6 relative">
     <h2 class="text-xl font-semibold mb-4">Add Specialization</h2>
-    <form method="POST" action="{% url 'add_specialization' %}">
+    <form method="POST" action="#">
       {% csrf_token %}
       <div class="mb-4">
         <label for="name" class="block text-sm font-medium text-gray-700">Specialization Name</label>
