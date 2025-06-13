@@ -46,18 +46,11 @@ class customLoginView(LoginView):
             # or raise an error / send to default page
             return reverse_lazy('home')
 
-# Admin Action
-@login_required
-def adminDashboard(request):
-    return render(request, 'admin/admin_dashboard.html', {
-        'title': 'Dashboard',
-    })
 
 # doctor actions
 @login_required
-def doctor_dashboard(request):
+def doctorDashboard(request):
     return render(request, 'doctor/doctor_dashboard.html')
-
 
 def manageSchedule(request, id=None):
 
@@ -101,11 +94,9 @@ def manageSchedule(request, id=None):
         'button_text': button_text
     })
 
+
 # patient actions
-# ________________________________________________________________________________
-
-
-def book_appointment(request):
+def bookAppointment(request):
     specializations = DoctorSpecializations.objects.filter(status='active')
 
     if request.method == 'POST':
@@ -271,7 +262,7 @@ def bookNewAppointment(request):
     return render(request, 'user/book_appointment.html', {'specializations': specializations})
 
 
-def get_doctors_by_specialization(request, spec_id):
+def getDoctorsBySpecialization(request, spec_id):
     try:
         spec = DoctorSpecializations.objects.get(id=spec_id, status='active')
         doctors = spec.doctors.filter(
@@ -285,7 +276,7 @@ def get_doctors_by_specialization(request, spec_id):
         return JsonResponse({'html': '<p>Specialization not found.</p>'}, status=404)
 
 
-def get_doctor_form(request, doctor_id):
+def getDoctorForm(request, doctor_id):
     doctor = get_object_or_404(User, id=doctor_id)
 
     doctor_schedule = DoctorAvailabilities.objects.filter(
@@ -295,3 +286,19 @@ def get_doctor_form(request, doctor_id):
         'doctor': doctor,
         'doctor_schedule': doctor_schedule,
     })
+
+
+# Admin Actions
+@login_required
+def adminDashboard(request):
+    return render(request, 'admin/admin_dashboard.html', {
+        'title': 'Dashboard',
+    })
+
+@login_required
+def manageDoctorSpecializations(request):
+    return render(request, 'admin/manage_doctor_specializations')
+
+@login_required
+def addSpecializations(request):
+    return render(request, 'admin/add/specializations.html')
