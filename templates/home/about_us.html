@@ -120,9 +120,16 @@
                 </p>
             </div>
             <div class="media-content">
-                <img src="{% static 'images/doctor-team.jpg' %}" alt="Doctor Team">
-                <div class="video-wrapper">
-                    <iframe src="https://www.youtube.com/embed/VIDEO_ID" frameborder="0" allowfullscreen></iframe>
+                <img src="{% static 'images/doctor-team.jpg' %}" alt="Doctor Team"/>
+                <div class="w-full md:w-3/4 lg:w-1/2 mx-auto p-4 bg-white rounded-xl shadow-md">
+                    <iframe 
+                        class="w-full h-64 md:h-80 rounded-lg"
+                        src="https://www.youtube.com/embed/1mS0wsNP47U"
+                        title="Doctor Appointment Video"
+                        frameborder="0"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                        allowfullscreen>
+                    </iframe>
                 </div>
             </div>
         </div>
