@@ -297,7 +297,7 @@ def adminDashboard(request):
 
 @login_required
 def manageDoctorSpecializations(request):
-    return render(request, 'admin/manage_specializations.html')
+    return render(request, 'admin/manage_doctor_specializations')
 
 @login_required
 def addSpecializations(request):
