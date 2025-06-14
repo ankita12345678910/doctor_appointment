@@ -13,6 +13,7 @@ from django.db import transaction
 from django.contrib.auth.views import LoginView
 from django.urls import reverse_lazy
 from django.views.decorators.http import require_POST
+from django.views.decorators.csrf import csrf_exempt
 
 
 # Homepage actions
@@ -98,81 +99,79 @@ def manageSchedule(request, id=None):
 
 
 # patient actions
+@csrf_exempt  # Use with care; better to use CSRF tokens if possible.
 def bookAppointment(request):
-    specializations = DoctorSpecializations.objects.filter(status='active')
-
     if request.method == 'POST':
-        with transaction.atomic():
-            patient_id = request.POST.get('patient_id')
+        try:
+            with transaction.atomic():
+                patient_id = request.POST.get('patient_id')
 
-            if patient_id:
-                # Look up existing patient by patient_id
-                user_details = get_object_or_404(
-                    UserDetails, patient_id=patient_id)
-                user = user_details.user
-            else:
-                # Create a new patient
-                first_name = request.POST.get('patient_first_name')
-                last_name = request.POST.get('patient_last_name')
-                email = request.POST.get('email')
-                phone_number = request.POST.get('mobile_number')
-                address = request.POST.get('address')
-                gender = request.POST.get('gender')
-                guardian_name = request.POST.get('guardian_name')
+                if patient_id:
+                    user_details = get_object_or_404(
+                        UserDetails, patient_id=patient_id)
+                    user = user_details.user
+                else:
+                    first_name = request.POST.get('patient_first_name')
+                    last_name = request.POST.get('patient_last_name')
+                    email = request.POST.get('email')
+                    phone_number = request.POST.get('mobile_number')
+                    address = request.POST.get('address')
+                    gender = request.POST.get('gender')
+                    guardian_name = request.POST.get('guardian_name')
 
-                if email and phone_number:
-                    generated_patient_id = 'P' + uuid.uuid4().hex[:6].upper()
+                    if email and phone_number:
+                        generated_patient_id = 'P' + \
+                            uuid.uuid4().hex[:6].upper()
+                        user = User.objects.create_user(
+                            username=email,
+                            first_name=first_name,
+                            last_name=last_name,
+                            email=email,
+                            password=phone_number
+                        )
 
-                    # Create user
-                    user = User.objects.create_user(
-                        username=email,
-                        first_name=first_name,
-                        last_name=last_name,
-                        email=email,
-                        password=phone_number
-                    )
+                        UserDetails.objects.create(
+                            user=user,
+                            role='role_patient',
+                            phone_number=phone_number,
+                            address=address,
+                            gender=gender,
+                            guardian_name=guardian_name,
+                            patient_id=generated_patient_id,
+                        )
+                        patient_id = generated_patient_id
 
-                    # Create related user details
-                    UserDetails.objects.create(
-                        user=user,
-                        role='role_patient',
-                        phone_number=phone_number,
-                        address=address,
-                        gender=gender,
-                        guardian_name=guardian_name,
-                        patient_id=generated_patient_id,
-                    )
+                doctor_id = request.POST.get('doctor_id')
+                patient_type = request.POST.get('patient_type')
+                appointment_date = datetime.strptime(
+                    request.POST.get('appointment_date'), '%m/%d/%Y').date()
+                appointment_time = datetime.strptime(
+                    request.POST.get('appointment_time'), '%H:%M').time()
+                doctor = get_object_or_404(User, id=doctor_id)
 
-                    patient_id = generated_patient_id
+                PatientBookAppointment.objects.create(
+                    appointment_date=appointment_date,
+                    appointment_time=appointment_time,
+                    patient_type=patient_type,
+                    patient=user,
+                    doctor=doctor
+                )
 
-            # Get form fields
-            doctor_id = request.POST.get('doctor_id')  # from hidden input
-            patient_type = request.POST.get('patient_type')
-            appointment_date = datetime.strptime(
-                request.POST.get('appointment_date'), '%m/%d/%Y').date()
-            appointment_time = datetime.strptime(
-                request.POST.get('appointment_time'), '%H:%M').time()
-            doctor = get_object_or_404(User, id=doctor_id)
+                return JsonResponse({
+                    'status': 'success',
+                    'message': 'Appointment booked successfully!',
+                    'patient_id': patient_id,
+                    'patient_name': f"{user.first_name} {user.last_name}"
+                })
 
-            # Save appointment
-            PatientBookAppointment.objects.create(
-                appointment_date=appointment_date,
-                appointment_time=appointment_time,
-                patient_type=patient_type,
-                patient=user,
-                doctor=doctor
-            )
+        except Exception as e:
+            return JsonResponse({'status': 'error', 'message': str(e)})
 
-            return render(request, 'user/appointment_confirmation.html', {
-                'patient_id': patient_id,
-                'patient_name': f"{user.first_name} {user.last_name}",
-                'appointment_time': appointment_time.strftime('%I:%M %p'),
-                'appointment_date': appointment_date.strftime('%m/%d/%Y'),
-            })
-
-    return render(request, 'user/book_appointment.html', {
-        'specializations': specializations
-    })
+    else:
+        specializations = DoctorSpecializations.objects.filter(status='active')
+        return render(request, 'user/book_appointment.html', {
+            'specializations': specializations
+        })
 
 
 def ajaxFetchTime(request):
@@ -300,11 +299,13 @@ def adminDashboard(request):
 
 @login_required
 def manageDoctorSpecializations(request):
-    specializations = DoctorSpecializations.objects.filter(status='Active').order_by('-created_at')
+    specializations = DoctorSpecializations.objects.filter(
+        status='Active').order_by('-created_at')
     return render(request, 'admin/manage_doctor_specializations.html', {
         'title': 'Manage Specializations',
         'specializations': specializations
     })
+
 
 @login_required
 @require_POST
@@ -316,6 +317,7 @@ def addSpecializations(request):
             serviceLogo=request.FILES.get('logo')  # handle file upload here
         )
     return redirect('manage_doctor_specializations')
+
 
 @login_required
 @require_POST
@@ -331,6 +333,7 @@ def editSpecialization(request, id):
 
         specialization.save()
     return redirect('manage_doctor_specializations')
+
 
 @login_required
 def deleteSpecialization(request, id):

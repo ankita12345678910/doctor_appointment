@@ -167,7 +167,7 @@
 <script>
     function handleSelect(radio, specId, specName) {
         if (radio.checked) {
-            fetch(`/get-doctors/${specId}/`)
+            fetch(`/patient/get-doctors/${specId}/`)
                 .then(response => {
                     if (!response.ok) {
                         throw new Error("Network response was not ok");
@@ -211,7 +211,7 @@
         console.log(`Selected Doctor: ${name} ID: ${id}`);
         document.getElementById("selected-doctor-name").innerText = name;
 
-        fetch(`/get-doctor-form/${id}/`)
+        fetch(`/patient/get-doctor-form/${id}/`)
             .then(response => {
                 if (!response.ok) {
                     throw new Error(`HTTP error! Status: ${response.status}`);
@@ -304,4 +304,33 @@
         });
     }
 </script>
+<script>
+    function submitAppointmentForm() {
+        const form = document.getElementById("appointment-form");
+        const formData = new FormData(form);
+
+        fetch("{% url 'book_appointment' %}", {
+            method: "POST",
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === "success") {
+                showSwal(data.message || "Appointment booked successfully!");
+                form.reset();
+                goToStep('step3', 'step1'); // Reset back to first step
+            } else {
+                showSwal(data.message || "Something went wrong.", "error");
+            }
+        })
+        .catch(error => {
+            console.error("Error:", error);
+            showSwal("An unexpected error occurred. Please try again.", "error");
+        });
+    }
+</script>
+
 {% endblock %}
