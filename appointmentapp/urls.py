@@ -1,7 +1,10 @@
+from django.conf import settings
 from django.urls import path, include
 from django.contrib.auth.views import LoginView, LogoutView
 from . import views
 from .views import customLoginView
+from django.conf.urls.static import static
+
 
 urlpatterns = [
     # Homepage URL
@@ -27,7 +30,9 @@ urlpatterns = [
     path('doctor/', include('appointmentapp.doctor_urls')),
 
     # Admin URL
-    path('dashboard/', views.adminDashboard, name='admin_dashboard'),
+    path('dashboard/', views.adminDashboard, name='admin_dashboard'), 
     path('manage/doctor/specializations/', views.manageDoctorSpecializations, name='manage_doctor_specializations'),
     path('add/specializations/', views.addSpecializations, name='add_specializations'),
-]
+    path('edit/specializations/<int:id>/', views.editSpecialization, name='edit_specializations'),
+    path('delete/specializations/<int:id>/', views.deleteSpecialization, name='delete_specializations'),
+]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -12,6 +12,7 @@ from django.shortcuts import render, get_object_or_404
 from django.db import transaction
 from django.contrib.auth.views import LoginView
 from django.urls import reverse_lazy
+from django.views.decorators.http import require_POST
 
 
 # Homepage actions
@@ -51,6 +52,7 @@ class customLoginView(LoginView):
 @login_required
 def doctorDashboard(request):
     return render(request, 'doctor/doctor_dashboard.html')
+
 
 def manageSchedule(request, id=None):
 
@@ -295,10 +297,44 @@ def adminDashboard(request):
         'title': 'Dashboard',
     })
 
-@login_required
-def manageDoctorSpecializations(request):
-    return render(request, 'admin/manage_doctor_specializations')
 
 @login_required
+def manageDoctorSpecializations(request):
+    specializations = DoctorSpecializations.objects.filter(status='Active').order_by('-created_at')
+    return render(request, 'admin/manage_doctor_specializations.html', {
+        'title': 'Manage Specializations',
+        'specializations': specializations
+    })
+
+@login_required
+@require_POST
 def addSpecializations(request):
-    return render(request, 'admin/add/specializations.html')
+    if request.method == 'POST':
+        DoctorSpecializations.objects.create(
+            name=request.POST['name'],
+            description=request.POST['description'],
+            serviceLogo=request.FILES.get('logo')  # handle file upload here
+        )
+    return redirect('manage_doctor_specializations')
+
+@login_required
+@require_POST
+def editSpecialization(request, id):
+    specialization = get_object_or_404(DoctorSpecializations, id=id)
+
+    if request.method == 'POST':
+        specialization.name = request.POST['name']
+        specialization.description = request.POST['description']
+
+        if 'logo' in request.FILES:
+            specialization.serviceLogo = request.FILES['logo']
+
+        specialization.save()
+    return redirect('manage_doctor_specializations')
+
+@login_required
+def deleteSpecialization(request, id):
+    specialization = get_object_or_404(DoctorSpecializations, id=id)
+    specialization.status = 'Deleted'
+    specialization.save()
+    return redirect('manage_doctor_specializations')
