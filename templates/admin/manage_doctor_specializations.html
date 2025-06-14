@@ -128,13 +128,17 @@
   document.getElementById('addSpecializationBtn').addEventListener('click', () => {
     const modalEl = document.getElementById('specializationModal');
     const modal = new bootstrap.Modal(modalEl);
-    const logoPreview = document.getElementById("logoPreview");
-    logoPreview.src="/static/images/default_spec_logo.png";
     document.getElementById('modalTitle').textContent = 'Add Specialization';
     document.getElementById('specializationForm').action = "{% url 'add_specializations' %}";
     document.getElementById('specializationId').value = '';
     document.getElementById('specializationName').value = '';
     document.getElementById('specializationDescription').value = '';
+    const logoPreview = document.getElementById("logoPreview");
+    const logoInput = document.getElementById("specializationLogo");
+    logoPreview.src = "/static/images/default_spec_logo.png";
+    logoInput.value = "";
+    logoInput.removeAttribute("hidden");
+    logoInput.setAttribute("required", "required");
     modal.show();
   });
 
@@ -147,20 +151,20 @@
 
     const logoPreview = document.getElementById("logoPreview");
     const logoInput = document.getElementById("specializationLogo");
-
     if (logoUrl) {
+      console.log(logoUrl);
       logoPreview.src = logoUrl;
       logoInput.removeAttribute("required"); 
       logoInput.setAttribute("hidden", true);
     } else {
       logoPreview.src = "/static/images/default_spec_logo.png";
       logoInput.setAttribute("required", "required");
+      logoInput.value = "";
+      logoInput.removeAttribute("hidden");
     }
-    logoInput.src = "/static/images/default_spec_logo.png";
-    // Change form action URL (to point to update)
     const form = document.getElementById("specializationForm");
-    form.action = `/edit/specializations/${id}/`; // adjust URL if needed
-
+    form.action = `/edit/specializations/${id}/`; 
+    
     // Optional: change modal title
     document.getElementById("modalTitle").innerText = "Edit Specialization";
   }
