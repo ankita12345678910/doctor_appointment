@@ -35,4 +35,8 @@ urlpatterns = [
     path('add/specializations/', views.addSpecializations, name='add_specializations'),
     path('edit/specializations/<int:id>/', views.editSpecialization, name='edit_specializations'),
     path('delete/specializations/<int:id>/', views.deleteSpecialization, name='delete_specializations'),
+
+    path('manage/doctors', views.manageDoctors, name="manage_doctors"),
+    path('add/doctors', views.addDoctors, name='add_doctors')
+    
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

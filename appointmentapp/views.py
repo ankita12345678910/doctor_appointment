@@ -14,6 +14,8 @@ from django.contrib.auth.views import LoginView
 from django.urls import reverse_lazy
 from django.views.decorators.http import require_POST
 from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth.hashers import make_password
+
 
 
 # Homepage actions
@@ -312,8 +314,8 @@ def manageDoctorSpecializations(request):
 def addSpecializations(request):
     if request.method == 'POST':
         DoctorSpecializations.objects.create(
-            name=request.POST['name'],
-            description=request.POST['description'],
+            name=request.POST.get('name'),
+            description=request.POST.get('description'),
             serviceLogo=request.FILES.get('logo')  # handle file upload here
         )
     return redirect('manage_doctor_specializations')
@@ -325,11 +327,11 @@ def editSpecialization(request, id):
     specialization = get_object_or_404(DoctorSpecializations, id=id)
 
     if request.method == 'POST':
-        specialization.name = request.POST['name']
-        specialization.description = request.POST['description']
+        specialization.name = request.POST.get('name')
+        specialization.description = request.POST.get('description')
 
         if 'logo' in request.FILES:
-            specialization.serviceLogo = request.FILES['logo']
+            specialization.serviceLogo = request.FILES.get('logo')
 
         specialization.save()
     return redirect('manage_doctor_specializations')
@@ -341,3 +343,46 @@ def deleteSpecialization(request, id):
     specialization.status = 'Deleted'
     specialization.save()
     return redirect('manage_doctor_specializations')
+
+@login_required
+def manageDoctors(request):
+    specializations = DoctorSpecializations.objects.filter(status='Active').order_by('-created_at')
+    
+    return render(request, 'admin/manage_doctors.html', {
+        'title': 'Manage Doctors',
+        'specializations': specializations if specializations else "",
+    })
+
+@login_required
+@require_POST
+def addDoctors(request):
+    if request.method == 'POST':
+        first_name = request.POST.get("first_name")
+        last_name = request.POST.get("last_name")
+        username = request.POST.get("first_name")
+        email = request.POST.get("email")
+        password = request.POST.get("phone_number")
+
+        # Check if email already exists
+        if User.objects.filter(email=email).exists():
+            return render(request, "register.html", {"error": "Email already registered!"})
+
+        # Create User object
+        user = User.objects.create(
+            first_name=first_name,
+            last_name=last_name,
+            username=username,
+            email=email,
+            password=make_password(password),  # Hash the password
+        )
+
+        # Create UserProfile object
+        UserDetails.objects.create(
+            user=user,
+            role='Role_Doctor',  # EnumField stores the selected role
+            gender=request.POST.get('gender'),
+            address = request.POST.get('address'),
+            phone_number=request.POST.get('phone_number'),
+            status = 'Active',
+        )
+    return redirect('manage_doctors')

@@ -1,0 +1,185 @@
+{% extends 'admin/admin_dashboard.html' %}
+{% load static %}
+
+{% block title %}Manage Doctors{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+  <!-- Add Doctor Button -->
+  <div class="d-flex justify-content-end mb-3">
+    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#doctorModal">+ Add Doctor</button>
+  </div>
+
+  <!-- Doctors Table -->
+  <div class="card shadow-sm">
+    <div class="table-responsive">
+      <table class="table align-middle table-hover mb-0">
+        <thead class="table-light">
+          <tr>
+            <th>#</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Phone</th>
+            <th>Specialization</th>
+            <th>Experience</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for doctor in doctors %}
+          <tr>
+            <td>{{ forloop.counter }}</td>
+            <td>{{ doctor.name }}</td>
+            <td>{{ doctor.email }}</td>
+            <td>{{ doctor.phone_number }}</td>
+            <td>{{ doctor.specialization.name }}</td>
+            <td>{{ doctor.experience }} yrs</td>
+            <td>
+              <!-- Action buttons (edit/delete) -->
+              <!-- Edit: Optional if required later -->
+              <a href="#" class="text-danger" onclick="return confirm('Are you sure?')">
+                <i class="bi bi-trash-fill"></i>
+              </a>
+            </td>
+          </tr>
+          {% empty %}
+          <tr>
+            <td colspan="7" class="text-center">No doctors found.</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Doctor Modal -->
+<!-- Doctor Modal -->
+<div class="modal fade" id="doctorModal" tabindex="-1" aria-labelledby="doctorModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <form method="POST" id="doctorForm" action="">
+      {% csrf_token %}
+      <input type="hidden" name="doctor_id" id="doctorId" />
+      <div class="modal-content">
+        <div class="modal-header bg-primary text-white">
+          <h5 class="modal-title" id="doctorModalLabel">Add Doctor</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+        </div>
+
+        <div class="modal-body">
+          <div class="row g-3">
+            <!-- Specialization -->
+            <div class="col-md-6">
+              <label for="specialization" class="form-label">Specialization <span class="text-danger">*</span></label>
+              <select class="form-select" id="specialization" name="specialization_id" required>
+                <option value="" disabled selected>-- Select Specialization --</option>
+                {% for specialization in specializations %}
+                  <option value="{{ specialization.id }}">{{ specialization.name }}</option>
+                {% endfor %}
+              </select>
+            </div>
+
+            <!-- First Name -->
+            <div class="col-md-6">
+              <label for="firstName" class="form-label">First Name <span class="text-danger">*</span></label>
+              <input type="text" class="form-control" id="firstName" name="first_name" required>
+            </div>
+
+            <!-- Last Name -->
+            <div class="col-md-6">
+              <label for="lastName" class="form-label">Last Name <span class="text-danger">*</span></label>
+              <input type="text" class="form-control" id="lastName" name="last_name" required>
+            </div>
+
+            <!-- Email -->
+            <div class="col-md-6">
+              <label for="email" class="form-label">Email <span class="text-danger">*</span></label>
+              <input type="email" class="form-control" id="email" name="email" required>
+            </div>
+
+            <!-- Phone Number -->
+            <div class="col-md-6">
+              <label for="phone" class="form-label">Phone Number <span class="text-danger">*</span></label>
+              <input type="text" class="form-control" id="phone" name="phone_number" required>
+            </div>
+
+            <!-- Gender -->
+            <div class="col-md-6">
+              <label class="form-label d-block">Gender <span class="text-danger">*</span></label>
+              <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" name="gender" id="male" value="Male" required>
+                <label class="form-check-label" for="male">Male</label>
+              </div>
+              <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" name="gender" id="female" value="Female">
+                <label class="form-check-label" for="female">Female</label>
+              </div>
+            </div>
+
+            <!-- Address -->
+            <div class="col-md-12">
+              <label for="address" class="form-label">Address</label>
+              <textarea class="form-control" id="address" name="address" rows="2"></textarea>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-success">Save Doctor</button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block javascript %}
+{{ block.super }}
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const doctorModal = document.getElementById("doctorModal");
+    const doctorForm = document.getElementById("doctorForm");
+
+    // Reset form when modal is closed
+    doctorModal.addEventListener("hidden.bs.modal", function () {
+      doctorForm.reset();
+      doctorForm.action = ""; // clear action
+      document.getElementById("doctorModalLabel").innerText = "Add Doctor";
+      document.getElementById("doctorId").value = "";
+    });
+
+    // Trigger modal in EDIT mode
+    window.openEditDoctorModal = function (button) {
+      const data = button.dataset;
+
+      // Set form action to update URL
+      doctorForm.action = data.updateUrl;
+
+      // Update modal title
+      document.getElementById("doctorModalLabel").innerText = "Edit Doctor";
+
+      // Populate form fields
+      document.getElementById("doctorId").value = data.id;
+      document.getElementById("firstName").value = data.firstName;
+      document.getElementById("lastName").value = data.lastName;
+      document.getElementById("email").value = data.email;
+      document.getElementById("phone").value = data.phone;
+      document.getElementById("address").value = data.address;
+      document.getElementById("specialization").value = data.specializationId;
+
+      // Set gender
+      if (data.gender === "Male") {
+        document.getElementById("male").checked = true;
+      } else if (data.gender === "Female") {
+        document.getElementById("female").checked = true;
+      }
+
+      // Show modal
+      new bootstrap.Modal(doctorModal).show();
+    };
+  });
+</script>
+
+{% endblock %}
