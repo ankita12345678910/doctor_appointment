@@ -317,20 +317,20 @@
             },
             body: formData
         })
-        .then(response => response.json())
-        .then(data => {
-            if (data.status === "success") {
-                showSwal(data.message || "Appointment booked successfully!");
-                form.reset();
-                goToStep('step3', 'step1'); // Reset back to first step
-            } else {
-                showSwal(data.message || "Something went wrong.", "error");
-            }
-        })
-        .catch(error => {
-            console.error("Error:", error);
-            showSwal("An unexpected error occurred. Please try again.", "error");
-        });
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === "success") {
+                    showSwal(data.message || "Appointment booked successfully!");
+                    form.reset();
+                    goToStep('step3', 'step1');
+                } else {
+                    showSwal(data.message || "Something went wrong.", "error");
+                }
+            })
+            .catch(error => {
+                console.error("Error:", error);
+                showSwal("An unexpected error occurred. Please try again.", "error");
+            });
     }
 </script>
 

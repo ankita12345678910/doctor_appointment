@@ -28,7 +28,7 @@
 
         <div class="col-md-6 mb-4">
             <div class="form-outline">
-                <select class="form-control form-control-lg" name="appointment_time" id="appointment_time">
+                <select class="form-control form-control-lg" name="appointment_time" id="appointment_time" required="true">
                     <option value="">--Select--</option>
                 </select>
                 <label class="form-label" for="appointment_time">Appointment time <span
@@ -39,7 +39,7 @@
 
     <div class="row">
         <div class="col-md-6 mb-4">
-            <select class="form-control form-control-lg" name="patient_type" id="js_patient_type">
+            <select class="form-control form-control-lg" name="patient_type" id="js_patient_type" required="true">
                 <option value="">-select-</option>
                 <option value="new">New</option>
                 <option value="old">Old</option>
@@ -48,7 +48,7 @@
         </div>
 
         <div class="col-md-6 mb-4">
-            <div class="form-outline" id="patient_email">
+            <div class="form-outline" id="patient_email" required="true">
                 <input type="email" class="form-control form-control-lg" name="email" />
                 <label class="form-label">Email <span style="color: red;">*</span></label>
             </div>
@@ -64,14 +64,14 @@
         <div class="row">
             <div class="col-md-6 mb-4">
                 <div class="form-outline">
-                    <input type="text" class="form-control form-control-lg" name="patient_first_name" />
+                    <input type="text" class="form-control form-control-lg" name="patient_first_name" required="true"/>
                     <label class="form-label">Patient First Name <span style="color: red;">*</span></label>
                 </div>
             </div>
 
             <div class="col-md-6 mb-4">
                 <div class="form-outline">
-                    <input type="text" class="form-control form-control-lg" name="patient_last_name" />
+                    <input type="text" class="form-control form-control-lg" name="patient_last_name" required="true"/>
                     <label class="form-label">Patient Last Name <span style="color: red;">*</span></label>
                 </div>
             </div>
@@ -79,7 +79,7 @@
 
         <div class="row">
             <div class="col-md-6 mb-4">
-                <select class="form-control form-control-lg" name="gender">
+                <select class="form-control form-control-lg" name="gender" required="true">
                     <option value="">-select-</option>
                     <option value="male">Male</option>
                     <option value="female">Female</option>
@@ -90,7 +90,7 @@
 
             <div class="col-md-6 mb-4">
                 <div class="form-outline">
-                    <input type="text" class="form-control form-control-lg" name="age" />
+                    <input type="text" class="form-control form-control-lg" name="age" required="true"/>
                     <label class="form-label">Age <span style="color: red;">*</span></label>
                 </div>
             </div>
@@ -99,21 +99,21 @@
         <div class="row">
             <div class="col-md-6 mb-4">
                 <div class="form-outline">
-                    <input type="text" class="form-control form-control-lg" name="guardian_name" />
+                    <input type="text" class="form-control form-control-lg" name="guardian_name" required="true"/>
                     <label class="form-label">Guardian Name <span style="color: red;">*</span></label>
                 </div>
             </div>
 
             <div class="col-md-6 mb-4">
                 <div class="form-outline">
-                    <input type="text" class="form-control form-control-lg" name="mobile_number" />
+                    <input type="text" class="form-control form-control-lg" name="mobile_number" required="true"/>
                     <label class="form-label">Mobile Number <span style="color: red;">*</span></label>
                 </div>
             </div>
         </div>
 
         <div class="form-outline mb-4">
-            <input type="text" class="form-control form-control-lg" name="address" style="height: 50px;" />
+            <input type="text" class="form-control form-control-lg" name="address" style="height: 50px;" required="true"/>
             <label class="form-label">Address <span style="color: red;">*</span></label>
         </div>
     </div>

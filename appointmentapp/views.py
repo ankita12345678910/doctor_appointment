@@ -101,11 +101,12 @@ def manageSchedule(request, id=None):
 
 
 # patient actions
-@csrf_exempt  # Use with care; better to use CSRF tokens if possible.
+@csrf_exempt
 def bookAppointment(request):
     if request.method == 'POST':
         try:
             with transaction.atomic():
+                user = None  # Initialize user
                 patient_id = request.POST.get('patient_id')
 
                 if patient_id:
@@ -121,34 +122,55 @@ def bookAppointment(request):
                     gender = request.POST.get('gender')
                     guardian_name = request.POST.get('guardian_name')
 
-                    if email and phone_number:
-                        generated_patient_id = 'P' + \
-                            uuid.uuid4().hex[:6].upper()
-                        user = User.objects.create_user(
-                            username=email,
-                            first_name=first_name,
-                            last_name=last_name,
-                            email=email,
-                            password=phone_number
-                        )
+                    # Validate essential fields
+                    if not all([first_name, last_name, email, phone_number, address, gender, guardian_name]):
+                        return JsonResponse({
+                            'status': 'error',
+                            'message': 'Please fill in all required fields.'
+                        })
 
-                        UserDetails.objects.create(
-                            user=user,
-                            role='role_patient',
-                            phone_number=phone_number,
-                            address=address,
-                            gender=gender,
-                            guardian_name=guardian_name,
-                            patient_id=generated_patient_id,
-                        )
-                        patient_id = generated_patient_id
+                    generated_patient_id = 'P' + uuid.uuid4().hex[:6].upper()
+                    user = User.objects.create_user(
+                        username=email,
+                        first_name=first_name,
+                        last_name=last_name,
+                        email=email,
+                        password=phone_number
+                    )
+
+                    UserDetails.objects.create(
+                        user=user,
+                        role='role_patient',
+                        phone_number=phone_number,
+                        address=address,
+                        gender=gender,
+                        guardian_name=guardian_name,
+                        patient_id=generated_patient_id,
+                    )
+                    patient_id = generated_patient_id
+
+                if not user:
+                    return JsonResponse({
+                        'status': 'error',
+                        'message': 'User creation failed. Please check the form and try again.'
+                    })
 
                 doctor_id = request.POST.get('doctor_id')
                 patient_type = request.POST.get('patient_type')
+                appointment_date_str = request.POST.get('appointment_date')
+                appointment_time_str = request.POST.get('appointment_time')
+
+                # Validate appointment fields
+                if not all([doctor_id, patient_type, appointment_date_str, appointment_time_str]):
+                    return JsonResponse({
+                        'status': 'error',
+                        'message': 'Appointment date, time, doctor, and patient type are required.'
+                    })
+
                 appointment_date = datetime.strptime(
-                    request.POST.get('appointment_date'), '%m/%d/%Y').date()
+                    appointment_date_str, '%m/%d/%Y').date()
                 appointment_time = datetime.strptime(
-                    request.POST.get('appointment_time'), '%H:%M').time()
+                    appointment_time_str, '%H:%M').time()
                 doctor = get_object_or_404(User, id=doctor_id)
 
                 PatientBookAppointment.objects.create(
@@ -301,7 +323,7 @@ def adminDashboard(request):
 
 @login_required
 def manageDoctorSpecializations(request):
-    try: 
+    try:
         specializations = DoctorSpecializations.objects.filter(
             status='Active').order_by('-created_at')
     except Exception as e:
@@ -348,6 +370,7 @@ def editSpecialization(request, id):
         messages.error(request, f'Error: {str(e)}')
 
     return redirect('manage_doctor_specializations')
+
 
 @require_POST
 @login_required
