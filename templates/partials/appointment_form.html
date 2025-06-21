@@ -4,9 +4,9 @@
 
     <!-- Doctor Full Name (Read-only Display) -->
     <div class="form-outline mb-4">
-        <label class="form-label">Doctor Name</label>
         <input type="text" class="form-control form-control-lg" value="{{ doctor.first_name }} {{ doctor.last_name }}"
-            readonly>
+        readonly>
+        <label class="form-label">Doctor Name</label>
     </div>
 
 
@@ -19,9 +19,9 @@
     <div class="row">
         <div class="col-md-6 mb-4">
             <div class="form-outline mb-4" id="datepicker-container">
+                <input type="text" id="datepicker" class="form-control form-control-lg" name="appointment_date" placeholder="--Select--"
+                required />
                 <label class="form-label" for="datepicker">Appointment date <span style="color: red;">*</span></label>
-                <input type="text" id="datepicker" class="form-control form-control-lg" name="appointment_date"
-                    required />
             </div>
 
         </div>
@@ -29,7 +29,7 @@
         <div class="col-md-6 mb-4">
             <div class="form-outline">
                 <select class="form-control form-control-lg" name="appointment_time" id="appointment_time">
-                    <option value="">-select-</option>
+                    <option value="">--Select--</option>
                 </select>
                 <label class="form-label" for="appointment_time">Appointment time <span
                         style="color: red;">*</span></label>

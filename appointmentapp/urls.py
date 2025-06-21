@@ -16,8 +16,6 @@ urlpatterns = [
     # path('test/home/', views.testHome, name='test_home'),
 
 
-
-
     # Common URL
     path('login/', customLoginView.as_view(template_name='login.html'), name='login'),
     path('logout/', LogoutView.as_view(next_page='login'), name='logout'),
@@ -34,9 +32,10 @@ urlpatterns = [
     path('manage/doctor/specializations/', views.manageDoctorSpecializations, name='manage_doctor_specializations'),
     path('add/specializations/', views.addSpecializations, name='add_specializations'),
     path('edit/specializations/<int:id>/', views.editSpecialization, name='edit_specializations'),
-    path('delete/specializations/<int:id>/', views.deleteSpecialization, name='delete_specializations'),
+    path('delete/specialization/<int:id>/', views.deleteSpecialization, name='delete_specializations'),
 
     path('manage/doctors', views.manageDoctors, name="manage_doctors"),
-    path('add/doctors', views.addDoctors, name='add_doctors')
+    path('add/doctors', views.addDoctors, name='add_doctors'),
+    path('delete/doctor/<int:id>/', views.deleteDoctor, name='delete_doctor')
     
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

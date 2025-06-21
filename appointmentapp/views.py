@@ -15,7 +15,7 @@ from django.urls import reverse_lazy
 from django.views.decorators.http import require_POST
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.hashers import make_password
-
+from django.contrib import messages
 
 
 # Homepage actions
@@ -301,8 +301,11 @@ def adminDashboard(request):
 
 @login_required
 def manageDoctorSpecializations(request):
-    specializations = DoctorSpecializations.objects.filter(
-        status='Active').order_by('-created_at')
+    try: 
+        specializations = DoctorSpecializations.objects.filter(
+            status='Active').order_by('-created_at')
+    except Exception as e:
+        messages.error(request, f'Error: {str(e)}')
     return render(request, 'admin/manage_doctor_specializations.html', {
         'title': 'Manage Specializations',
         'specializations': specializations
@@ -312,77 +315,122 @@ def manageDoctorSpecializations(request):
 @login_required
 @require_POST
 def addSpecializations(request):
-    if request.method == 'POST':
-        DoctorSpecializations.objects.create(
-            name=request.POST.get('name'),
-            description=request.POST.get('description'),
-            serviceLogo=request.FILES.get('logo')  # handle file upload here
-        )
+    try:
+        if request.method == 'POST':
+            DoctorSpecializations.objects.create(
+                name=request.POST.get('name'),
+                description=request.POST.get('description'),
+                serviceLogo=request.FILES.get(
+                    'logo')  # handle file upload here
+            )
+            messages.success(request, 'Specialization added successfully!')
+    except Exception as e:
+        messages.error(request, f'Error: {str(e)}')
+
     return redirect('manage_doctor_specializations')
 
 
 @login_required
 @require_POST
 def editSpecialization(request, id):
-    specialization = get_object_or_404(DoctorSpecializations, id=id)
+    try:
+        specialization = get_object_or_404(DoctorSpecializations, id=id)
 
-    if request.method == 'POST':
-        specialization.name = request.POST.get('name')
-        specialization.description = request.POST.get('description')
+        if request.method == 'POST':
+            specialization.name = request.POST.get('name')
+            specialization.description = request.POST.get('description')
 
-        if 'logo' in request.FILES:
-            specialization.serviceLogo = request.FILES.get('logo')
+            if 'logo' in request.FILES:
+                specialization.serviceLogo = request.FILES.get('logo')
+            specialization.save()
+            messages.success(request, 'Specialization Updated SUccessfully!')
+    except Exception as e:
+        messages.error(request, f'Error: {str(e)}')
 
-        specialization.save()
     return redirect('manage_doctor_specializations')
 
-
+@require_POST
 @login_required
 def deleteSpecialization(request, id):
-    specialization = get_object_or_404(DoctorSpecializations, id=id)
-    specialization.status = 'Deleted'
-    specialization.save()
+    try:
+        if request.method == 'POST':
+            specialization = get_object_or_404(DoctorSpecializations, id=id)
+            specialization.status = 'Deleted'
+            specialization.save()
+            messages.success(request, 'Specialization Removed Successfully!')
+    except Exception as e:
+        messages.error(request, f'Error: {str(e)}')
+
     return redirect('manage_doctor_specializations')
+
 
 @login_required
 def manageDoctors(request):
-    specializations = DoctorSpecializations.objects.filter(status='Active').order_by('-created_at')
-    
+    try:
+        specializations = DoctorSpecializations.objects.filter(
+            status='Active').order_by('-created_at')
+        doctors = User.objects.filter(details__status='Active', is_active=True).select_related(
+            'details')  # Use lowercase related model name
+    except Exception as e:
+        messages.error(request, f'Error: {str(e)}')
     return render(request, 'admin/manage_doctors.html', {
         'title': 'Manage Doctors',
         'specializations': specializations if specializations else "",
+        'doctors': doctors,
     })
+
 
 @login_required
 @require_POST
 def addDoctors(request):
-    if request.method == 'POST':
-        first_name = request.POST.get("first_name")
-        last_name = request.POST.get("last_name")
-        username = request.POST.get("first_name")
-        email = request.POST.get("email")
-        password = request.POST.get("phone_number")
+    try:
+        if request.method == 'POST':
+            first_name = request.POST.get("first_name")
+            last_name = request.POST.get("last_name")
+            username = request.POST.get("first_name")
+            email = request.POST.get("email")
+            password = request.POST.get("phone_number")
 
-        # Check if email already exists
-        if User.objects.filter(email=email).exists():
-            return render(request, "register.html", {"error": "Email already registered!"})
+            # Check if email already exists
+            if User.objects.filter(email=email).exists():
+                return render(request, "admin/manage_doctors.html", {"error": "Email already registered!"})
 
-        # Create User object
-        user = User.objects.create(
-            first_name=first_name,
-            last_name=last_name,
-            username=username,
-            email=email,
-            password=make_password(password),  # Hash the password
-        )
+            # Create User object
+            user = User.objects.create(
+                first_name=first_name,
+                last_name=last_name,
+                username=username,
+                email=email,
+                password=make_password(password),  # Hash the password
+            )
 
-        # Create UserProfile object
-        UserDetails.objects.create(
-            user=user,
-            role='Role_Doctor',  # EnumField stores the selected role
-            gender=request.POST.get('gender'),
-            address = request.POST.get('address'),
-            phone_number=request.POST.get('phone_number'),
-            status = 'Active',
-        )
+            # Create UserProfile object
+            UserDetails.objects.create(
+                user=user,
+                role='Role_Doctor',  # EnumField stores the selected role
+                gender=request.POST.get('gender'),
+                address=request.POST.get('address'),
+                phone_number=request.POST.get('phone_number'),
+                status='Active',
+            )
+            messages.success(request, 'Doctors Added Successfully!')
+        else:
+            messages.success(request, 'Something went Wrong')
+    except Exception as e:
+        messages.error(request, f'Error: {str(e)}')
+    return redirect('manage_doctors')
+
+
+@login_required
+@require_POST
+def deleteDoctor(request, id):
+    try:
+        doctor = get_object_or_404(User, id=id)
+        # Update the status in the related UserDetails model
+        if hasattr(doctor, 'details'):
+            doctor.details.status = 'Deleted'
+            doctor.details.save()
+            messages.success(request, 'Specialization Removed Successfully!')
+    except Exception as e:
+        messages.error(request, f'Error: {str(e)}')
     return redirect('manage_doctors')
