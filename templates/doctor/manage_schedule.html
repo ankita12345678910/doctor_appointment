@@ -1,16 +1,19 @@
-{% extends 'doctor_base.html' %}
+{% extends 'admin/admin_dashboard.html' %}
+{% load static %}
 
 {% block title %}
-{{ block.super }} - {{title}}
+{{ block.super }}{{title}}
+{% endblock %}
+
+{% block headInclude %}
+{{ block.super }}
 {% endblock %}
 
 {% block content %}
-{% load static %}
 <div class="container py-5">
     <h2 class="text-center mb-4 text-dark">{{title}}</h2>
     <div class="row justify-content-center">
         <div class="col-md-8 col-lg-6">
-            <!-- Card for the form -->
             <div class="card shadow-lg rounded-lg p-4">
                 <form action="" method="post">
                     {% csrf_token %}
@@ -55,6 +58,12 @@
 </div>
 {% endblock %}
 
-{% block footer %}
+{% block javascript %}
 {{ block.super }}
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('appointment_date').setAttribute('min', today);
+    });
+</script>
 {% endblock %}
