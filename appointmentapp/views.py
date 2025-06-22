@@ -16,6 +16,8 @@ from django.views.decorators.http import require_POST
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.hashers import make_password
 from django.contrib import messages
+from django.db import IntegrityError
+from datetime import datetime
 
 
 # Homepage actions
@@ -58,7 +60,6 @@ def doctorDashboard(request):
 
 
 def manageSchedule(request, id=None):
-
     if id == str(-1):
         title = "Add New Schedule"
         button_text = "Add"
@@ -70,27 +71,67 @@ def manageSchedule(request, id=None):
             "SELECT * FROM doctor_schedule WHERE id=%s AND doctor_id=%s", [id, request.user.id])
         schedule = schedules[0] if schedules else None
 
-    if request.method == 'POST':
+    if request.method == 'POST':  # Handle AJAX request
         schedule_date = request.POST.get('date')
-        start_time = request.POST.get('startTime')
-        end_time = request.POST.get('endTime')
-        if schedule_date and start_time and end_time:
-            if schedule:
-                # Update existing schedule
-                schedule.date = schedule_date
-                schedule.start_time = start_time
-                schedule.end_time = end_time
-                schedule.save()
-            else:
-                # Create new schedule
-                schedule = DoctorAvailabilities.objects.create(
-                    date=schedule_date,
-                    start_time=start_time,
-                    end_time=end_time,
-                    doctor=request.user
-                )
-            # Redirect to a relevant page after saving
-            return redirect('doctor_dashboard')
+        start_time_str = request.POST.get('startTime')
+        end_time_str = request.POST.get('endTime')
+        slot_duration_str = request.POST.get('slot_duration')
+
+        if schedule_date and start_time_str and end_time_str and slot_duration_str:
+            try:
+                start_dt = datetime.strptime(start_time_str, "%H:%M")
+                end_dt = datetime.strptime(end_time_str, "%H:%M")
+                slot_duration = int(slot_duration_str)
+                total_minutes = int((end_dt - start_dt).total_seconds() / 60)
+                if total_minutes <= 0:
+                    return JsonResponse({'success': False, 'message': "End time must be after start time."})
+
+                if slot_duration <= 0:
+                    return JsonResponse({'success': False, 'message': "Slot duration must be a positive number."})
+
+                if total_minutes % slot_duration != 0:
+                    return JsonResponse({'success': False, 'message': f"The total duration is {total_minutes} minutes, which can't be evenly divided into {slot_duration}-minute slots."})
+
+                maximum_patient = total_minutes // slot_duration
+
+                if schedule:
+                    # Update existing schedule
+                    schedule.date = schedule_date
+                    schedule.start_time = start_dt.time()
+                    schedule.end_time = end_dt.time()
+                    schedule.slot_duration = slot_duration
+                    schedule.maximum_patient = maximum_patient
+                    schedule.save()
+                else:
+                    existing_schedule = DoctorAvailabilities.objects.filter(
+                        doctor=request.user,
+                        date=schedule_date,
+                        start_time=start_dt.time(),
+                        end_time=end_dt.time()
+                    ).exists()
+
+                    if existing_schedule:
+                        return JsonResponse({'success': False, 'message': "This schedule already exists for the selected time range."})
+
+                    DoctorAvailabilities.objects.create(
+                        doctor=request.user,
+                        date=schedule_date,
+                        start_time=start_dt.time(),
+                        end_time=end_dt.time(),
+                        slot_duration=slot_duration,
+                        maximum_patient=maximum_patient,
+                    )
+
+                return JsonResponse({'success': True, 'message': "Schedule saved successfully."})
+
+            except IntegrityError as e:
+                return JsonResponse({'success': False, 'message': "This schedule already exists for the selected time range."})
+
+            except Exception as e:
+                return JsonResponse({'success': False, 'message': f"Error: {str(e)}"})
+
+        else:
+            return JsonResponse({'success': False, 'message': "All fields are required."})
 
     return render(request, 'doctor/manage_schedule.html', {
         'id': id,
@@ -100,7 +141,6 @@ def manageSchedule(request, id=None):
     })
 
 
-# patient actions
 @csrf_exempt
 def bookAppointment(request):
     if request.method == 'POST':
