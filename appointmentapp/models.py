@@ -22,20 +22,24 @@ class PatientBookAppointment(models.Model):
     doctor = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name='appointments_as_doctor')
     is_deleted = models.BooleanField(default=False)
-    # Time for rescheduled appointment
+
+    # Rescheduled time/date
     reschedule_time = models.TimeField(null=True, blank=True)
-    # Date for rescheduled appointment
     reschedule_date = models.DateField(null=True, blank=True)
-    # Appointment status (scheduled, completed, etc.)
+
+    # Prescription file (PDF, image, etc.)
+    prescription_file = models.FileField(
+        upload_to='prescriptions/', null=True, blank=True)
+
+    # Appointment status
     status = EnumField(choices=StatusEnum.choices, default='scheduled')
+
     created_at = models.DateTimeField(auto_now_add=True)
-    # Automatically updates when the object is saved
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
         db_table = 'patient_book_appointment'
-        unique_together = ('appointment_date',
-                           'appointment_time', 'patient', 'doctor')
+        unique_together = ('appointment_date', 'appointment_time', 'patient', 'doctor')
 
     def __str__(self):
         return f"{self.patient.username} - {self.doctor.username} on {self.appointment_date} at {self.appointment_time} status {self.status}"
@@ -52,7 +56,7 @@ class DoctorAvailabilities(models.Model):
     maximum_patient = models.IntegerField(default=0)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-
+    slot_duration = models.PositiveIntegerField(default=15)
     class Meta:
         db_table = 'doctor_availabilities'
         unique_together = ('doctor', 'date', 'start_time', 'end_time')
@@ -109,6 +113,8 @@ class UserDetails(models.Model):
     profile_pic = models.ImageField(
         upload_to='profile/', null=True, blank=True)
     patient_id = models.CharField(max_length=255, null=True)
+    experience_years = models.PositiveIntegerField(null=True, blank=True)
+    qualification = models.TextField(null=True, blank=True)
     updated_at = models.DateTimeField(auto_now=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
