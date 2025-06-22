@@ -242,16 +242,24 @@
     function rebindAppointmentJS() {
         $("#datepicker").datepicker({
             appendTo: "#datepicker-container",
+            minDate: 0,
             beforeShowDay: function (date) {
-                var enabledDates = [];
+                const enabledDates = [];
                 $('#available_schedule_date option').each(function () {
-                    var optionText = $(this).text();
-                    enabledDates.push(new Date(optionText));
+                    const optionText = $(this).text();
+                    const parsedDate = new Date(optionText);
+                    if (!isNaN(parsedDate)) {
+                        enabledDates.push(parsedDate);
+                    }
                 });
-                for (var i = 0; i < enabledDates.length; i++) {
-                    if (date.getFullYear() === enabledDates[i].getFullYear() &&
-                        date.getMonth() === enabledDates[i].getMonth() &&
-                        date.getDate() === enabledDates[i].getDate()) {
+
+                for (let i = 0; i < enabledDates.length; i++) {
+                    const d = enabledDates[i];
+                    if (
+                        date.getFullYear() === d.getFullYear() &&
+                        date.getMonth() === d.getMonth() &&
+                        date.getDate() === d.getDate()
+                    ) {
                         return [true, ""];
                     }
                 }
@@ -309,6 +317,20 @@
     function submitAppointmentForm() {
         const form = document.getElementById("appointment-form");
         const formData = new FormData(form);
+        const dateInput = document.getElementById("datepicker").value;
+        if (!dateInput) {
+            showSwal("Please select an appointment date.", "error");
+            return;
+        }
+
+        const selectedDate = new Date(dateInput);
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        if (selectedDate < today) {
+            showSwal("You cannot select a past date for your appointment.", "error");
+            return;
+        }
 
         fetch("{% url 'book_appointment' %}", {
             method: "POST",
@@ -320,9 +342,11 @@
             .then(response => response.json())
             .then(data => {
                 if (data.status === "success") {
-                    showSwal(data.message || "Appointment booked successfully!");
-                    form.reset();
-                    goToStep('step3', 'step1');
+                    showSwal(data.message || "Appointment booked successfully!", "success")
+                        .then(() => {
+                            form.reset();
+                            goToStep('step3', 'step1');
+                        });
                 } else {
                     showSwal(data.message || "Something went wrong.", "error");
                 }
@@ -333,5 +357,6 @@
             });
     }
 </script>
+
 
 {% endblock %}

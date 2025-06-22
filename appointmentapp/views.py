@@ -199,8 +199,6 @@ def bookAppointment(request):
                 patient_type = request.POST.get('patient_type')
                 appointment_date_str = request.POST.get('appointment_date')
                 appointment_time_str = request.POST.get('appointment_time')
-
-                # Validate appointment fields
                 if not all([doctor_id, patient_type, appointment_date_str, appointment_time_str]):
                     return JsonResponse({
                         'status': 'error',
