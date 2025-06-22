@@ -366,11 +366,13 @@ def manageDoctorSpecializations(request):
     try:
         specializations = DoctorSpecializations.objects.filter(
             status='Active').order_by('-created_at')
+        doctors = User.objects.filter(details__status='Active', details__role='Role_Doctor', is_active=True)
     except Exception as e:
         messages.error(request, f'Error: {str(e)}')
     return render(request, 'admin/manage_doctor_specializations.html', {
         'title': 'Manage Specializations',
-        'specializations': specializations
+        'specializations': specializations,
+        'doctors': doctors,
     })
 
 
@@ -497,3 +499,8 @@ def deleteDoctor(request, id):
     except Exception as e:
         messages.error(request, f'Error: {str(e)}')
     return redirect('manage_doctors')
+
+@login_required
+@require_POST
+def assignDoctors(request):
+    pass

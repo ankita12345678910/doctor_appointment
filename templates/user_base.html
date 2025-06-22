@@ -26,36 +26,34 @@
     {% load static %}
 
     <header class="bg-dark text-white d-flex align-items-center justify-content-between px-4 py-2">
-        <!-- Left-Aligned Home Logo and Title -->
+        <!-- Left-Aligned Dynamic Title -->
         <div class="d-flex align-items-center" style="margin-left: 280px;">
-            <!-- Home Icon -->
-            <a href="{% url 'home' %}" class="text-white me-3 fs-4">
-                <i class="bi bi-house-door-fill"></i>
-            </a>
-            <!-- Page Title -->
-            <!-- <h6 class="mb-0 fw-semibold">
+            <h6 class="mb-0 fw-semibold">
                 {% if title %}
-                <span class="text-white-50 fs-4">›</span>
-                <span style="font-size: 25px;">{{ title }}</span>
+                    <span class="text-white-50 fs-4">›</span>
+                    <span style="font-size: 25px;">{{ title }}</span>
                 {% endif %}
-            </h6> -->
+            </h6>
         </div>
 
         <!-- Right-Aligned Profile Dropdown -->
         <div class="d-flex align-items-center gap-4">
             {% if user.is_authenticated %}
+            <!-- Home Icon -->
+            <a href="{% url 'home' %}" class="text-white fs-4">
+            <i class="bi bi-house-door-fill"></i>
+            </a>
+            {% if user.details.profile_pic %}
+            <img src="{{ user.details.profile_pic.url }}" alt="Profile Picture" class="rounded-circle"
+                style="width: 35px; height: 35px; object-fit: cover;">
+            {% else %}
+            <img src="{% static 'images/default_profile.jpg' %}" alt="Default Profile Picture" class="rounded-circle"
+                style="width: 35px; height: 35px; object-fit: cover;">
+            {% endif %}
+
             <div class="dropdown">
                 <a href="#" class="d-flex align-items-center text-white text-decoration-none dropdown-toggle"
                     id="dropdownUser" data-bs-toggle="dropdown" aria-expanded="false">
-
-                    {% if user.details.profile_pic %}
-                    <img src="{{ user.details.profile_pic.url }}" alt="Profile Picture" class="rounded-circle me-2"
-                        style="width: 35px; height: 35px; object-fit: cover;">
-                    {% else %}
-                    <img src="{% static 'images/default_profile.jpg' %}" alt="Default Profile Picture"
-                        class="rounded-circle me-2" style="width: 35px; height: 35px; object-fit: cover;">
-                    {% endif %}
-
                     <span class="fs-4">Hi, {{ user.first_name }} {{ user.last_name }}</span>
                 </a>
 
@@ -142,11 +140,6 @@
             <li>
                 <a href="#" class="nav-link fw-semibold">
                     <i class="fas fa-file-medical-alt me-2"></i> Patient Records
-                </a>
-            </li>
-            <li>
-                <a href="#" class="nav-link fw-semibold">
-                    <i class="fas fa-cog me-2"></i> Settings
                 </a>
             </li>
             {% endif %}
