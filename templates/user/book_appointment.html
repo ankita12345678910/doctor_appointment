@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-
+{% load static %}
 {% block title %}
 {{ block.super }} - Book Appointment
 {% endblock %}
@@ -101,7 +101,7 @@
 {% block content %}
 <div class="py-5">
     <div class="position-relative text-white text-center py-5">
-        <img src="https://i.pinimg.com/736x/5c/27/5a/5c275aeec42bcfe2229eb1e103c08d6e.jpg" class="img-fluid w-100"
+        <img src="{% static 'images/click_on_book_appointment.jpg' %}" class="img-fluid w-100"
             style="height: 250px; object-fit: cover; object-position: top;" alt="Book Appointment Banner">
 
         <h4 class="position-absolute top-50 start-50 translate-middle fw-bold display-5" style="color: #1b2c3e;">

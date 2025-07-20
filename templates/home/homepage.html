@@ -14,19 +14,19 @@
             <div class="carousel-inner h-full">
                 <!-- Slide 1 -->
                 <div class="carousel-item active h-full relative">
-                    <img src="{% static 'images/banner6.jpg' %}" class="w-100 h-80 object-cover page-flip"
+                    <img src="{% static 'images/banner1.jpg' %}" class="object-cover page-flip" style="width: 100vw;height: 57vh;"
                         alt="Banner 1">
                 </div>
 
                 <!-- Slide 2 -->
                 <div class="carousel-item h-full relative">
-                    <img src="{% static 'images/banner2.jpg' %}" class="w-100 h-80 object-cover page-flip"
+                    <img src="{% static 'images/banner2.jpg' %}" class="w-100 h-80 object-cover page-flip" style="width: 100vw;height: 57vh;"
                         alt="Banner 2">
                 </div>
 
                 <!-- Slide 3 -->
                 <div class="carousel-item h-full relative">
-                    <img src="{% static 'images/banner1.jpg' %}" class="w-full h-64 object-cover page-flip"
+                    <img src="{% static 'images/banner7.jpg' %}" class="w-100 h-64 object-cover page-flip" style="width: 100vw;height: 57vh;"
                         alt="Banner 3">
                 </div>
             </div>
@@ -34,7 +34,7 @@
     </section>
 
     <!-- health wellknowns tips -->
-    <section class="health-tips py-5 px-3 px-md-4 text-center bg-light bg-gradient">
+    <section class="health-tips py-4 px-3 px-md-4 text-center bg-light bg-gradient">
         <div class="container-fluid px-3 px-md-5">
             <h2 class="display-5 fw-bold text-green mb-3">Health & Wellness Tips</h2>
 
@@ -145,7 +145,7 @@
                             class="doctor-img mb-3">
                         <h5 class="fw-bold heading-black mb-1">Dr. Sarah Lee</h5>
                         <p class="text-muted mb-3 paragraph-black">Cardiologist</p>
-                        <a href="#" class="btn btn-outline-success btn-sm">Book Appointment</a>
+                        <a href="{% url 'book_appointment' %}" class="btn btn-outline-success btn-sm">Book Appointment</a>
                     </div>
                 </div>
 
@@ -155,7 +155,7 @@
                             class="doctor-img mb-3">
                         <h5 class="fw-bold mb-1 heading-black">Dr. Ahmed Khan</h5>
                         <p class="text-muted mb-3 paragraph-black">Orthopedic Surgeon</p>
-                        <a href="#" class="btn btn-outline-success btn-sm">Book Appointment</a>
+                        <a href="{% url 'book_appointment' %}" class="btn btn-outline-success btn-sm">Book Appointment</a>
                     </div>
                 </div>
 
@@ -165,7 +165,7 @@
                             class="doctor-img mb-3">
                         <h5 class="fw-bold mb-1 heading-black">Dr. Emily Chen</h5>
                         <p class="text-muted mb-3 paragraph-black">Pediatrician</p>
-                        <a href="#" class="btn btn-outline-success btn-sm">Book Appointment</a>
+                        <a href="{% url 'book_appointment' %}" class="btn btn-outline-success btn-sm">Book Appointment</a>
                     </div>
                 </div>
 
@@ -175,7 +175,7 @@
                             class="doctor-img mb-3">
                         <h5 class="fw-bold mb-1 heading-black">Dr. James Patel</h5>
                         <p class="text-muted mb-3 paragraph-black">Dermatologist</p>
-                        <a href="#" class="btn btn-outline-success btn-sm">Book Appointment</a>
+                        <a href="{% url 'book_appointment' %}" class="btn btn-outline-success btn-sm">Book Appointment</a>
                     </div>
                 </div>
             </div>

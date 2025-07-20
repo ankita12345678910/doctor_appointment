@@ -98,7 +98,7 @@ html {
 }
 
 .btn-outline-success:focus {
-    outline: 2px dashed #0c5443;
+    outline: 2px #0c5443;
     outline-offset: 3px;
 }
 
