@@ -17,7 +17,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.hashers import make_password
 from django.contrib import messages
 from django.db import IntegrityError
-from datetime import datetime
+from datetime import datetime, timedelta
 
 
 # Homepage actions
@@ -199,8 +199,6 @@ def bookAppointment(request):
                 patient_type = request.POST.get('patient_type')
                 appointment_date_str = request.POST.get('appointment_date')
                 appointment_time_str = request.POST.get('appointment_time')
-
-                # Validate appointment fields
                 if not all([doctor_id, patient_type, appointment_date_str, appointment_time_str]):
                     return JsonResponse({
                         'status': 'error',
@@ -241,39 +239,48 @@ def bookAppointment(request):
 def ajaxFetchTime(request):
     appointment_date = request.GET.get('appointment_date')
     doctor_id = request.GET.get('doctor_id')
-    if appointment_date:
+
+    if appointment_date and doctor_id:
         try:
-            date_obj = datetime.strptime(appointment_date, '%m/%d/%Y')
+            date_obj = datetime.strptime(appointment_date, '%m/%d/%Y').date()
             schedule = DoctorAvailabilities.objects.filter(
-                doctor_id=doctor_id, date=date_obj).first()
+                doctor_id=doctor_id, date=date_obj
+            ).first()
+
             if schedule:
-                # Convert the DoctorAvailabilities object into a dictionary
-                schedule_data = {
-                    'id': schedule.id,
-                    'doctor_id': schedule.doctor_id,
-                    'date': schedule.date.strftime('%m/%d/%Y'),
-                    'start_time': schedule.start_time.strftime('%H:%M'),
-                    'end_time': schedule.end_time.strftime('%H:%M'),
-                }
+                # Get booked times for this doctor and date
+                booked_slots = PatientBookAppointment.objects.filter(
+                    doctor_id=doctor_id,
+                    appointment_date=date_obj,
+                    is_deleted=False,
+                    status='scheduled'
+                ).values_list('appointment_time', flat=True)
 
                 response_data = {
                     'status': 'success',
-                    'schedule': schedule_data,
+                    'schedule': {
+                        'start_time': schedule.start_time.strftime('%H:%M'),
+                        'end_time': schedule.end_time.strftime('%H:%M'),
+                        'slot_duration': schedule.slot_duration,
+                        'booked_slots': [time.strftime('%H:%M') for time in booked_slots],
+                    }
                 }
             else:
                 response_data = {
                     'status': 'error',
-                    'message': 'No schedule found for the given doctor and date'
+                    'message': 'No schedule found for this doctor on that date.'
                 }
-        except ValueError:
+
+        except Exception as e:
             response_data = {
                 'status': 'error',
-                'message': 'Invalid date format'
+                'message': f'Error: {str(e)}'
             }
+
     else:
         response_data = {
             'status': 'error',
-            'message': 'No appointment date provided'
+            'message': 'Missing appointment date or doctor ID.'
         }
 
     return JsonResponse(response_data)

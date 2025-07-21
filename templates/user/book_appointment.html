@@ -242,16 +242,24 @@
     function rebindAppointmentJS() {
         $("#datepicker").datepicker({
             appendTo: "#datepicker-container",
+            minDate: 0,
             beforeShowDay: function (date) {
-                var enabledDates = [];
+                const enabledDates = [];
                 $('#available_schedule_date option').each(function () {
-                    var optionText = $(this).text();
-                    enabledDates.push(new Date(optionText));
+                    const optionText = $(this).text();
+                    const parsedDate = new Date(optionText);
+                    if (!isNaN(parsedDate)) {
+                        enabledDates.push(parsedDate);
+                    }
                 });
-                for (var i = 0; i < enabledDates.length; i++) {
-                    if (date.getFullYear() === enabledDates[i].getFullYear() &&
-                        date.getMonth() === enabledDates[i].getMonth() &&
-                        date.getDate() === enabledDates[i].getDate()) {
+
+                for (let i = 0; i < enabledDates.length; i++) {
+                    const d = enabledDates[i];
+                    if (
+                        date.getFullYear() === d.getFullYear() &&
+                        date.getMonth() === d.getMonth() &&
+                        date.getDate() === d.getDate()
+                    ) {
                         return [true, ""];
                     }
                 }
@@ -260,8 +268,7 @@
         });
 
         $('body').on('change', '#datepicker', function () {
-            var doc_id = $("#doctor_id").val();
-            console.log(doc_id);
+            const doc_id = $("#doctor_id").val();
             $.ajax({
                 url: "{% url 'ajax_fetch_time_from_date' %}",
                 type: "GET",
@@ -271,27 +278,55 @@
                 },
                 dataType: 'json',
                 success: function (response) {
-                    var html = '<option value="">-select-</option>';
+                    let html = '<option value="">-select-</option>';
+
                     if (response.status === 'success' && response.schedule) {
-                        var startTime = response.schedule.start_time;
-                        var endTime = response.schedule.end_time;
-                        var start = new Date("1970-01-01T" + startTime + ":00Z");
-                        var end = new Date("1970-01-01T" + endTime + ":00Z");
-                        for (var time = start; time < end; time.setMinutes(time.getMinutes() + 30)) {
-                            var hour = time.getUTCHours().toString().padStart(2, '0');
-                            var minute = time.getUTCMinutes().toString().padStart(2, '0');
-                            var timeString = hour + ':' + minute;
-                            html += `<option value="${timeString}">${timeString}</option>`;
+                        const startTime = response.schedule.start_time;
+                        const endTime = response.schedule.end_time;
+                        const slotDuration = response.schedule.slot_duration || 30;
+                        const booked = response.schedule.booked_slots || [];
+
+                        let start = new Date(`1970-01-01T${startTime}:00`);
+                        const end = new Date(`1970-01-01T${endTime}:00`);
+
+                        const availableSlots = [];
+                        while (start < end) {
+                            const hour = start.getHours().toString().padStart(2, '0');
+                            const minute = start.getMinutes().toString().padStart(2, '0');
+                            const timeString = `${hour}:${minute}`;
+
+                            if (!booked.includes(timeString)) {
+                                availableSlots.push(timeString);
+                            }
+
+                            start.setMinutes(start.getMinutes() + slotDuration);
                         }
+
+                        if (availableSlots.length === 0) {
+                            html = '<option value="">No slots available</option>';
+                        } else {
+                            html = '<option value="">-select-</option>';
+                            availableSlots.forEach(time => {
+                                html += `<option value="${time}">${time}</option>`;
+                            });
+                        }
+
                         $('#appointment_time').html(html);
+
+                    } else {
+                        $('#appointment_time').html('<option value="">No available slots</option>');
+                        showSwal(response.message || "No schedule found.", "error");
                     }
                 },
                 error: function () {
                     $('#appointment_time').html('<option value="">Error</option>');
+                    showSwal("Server error while fetching available time slots.", "error");
                 }
             });
         });
 
+
+        // Patient type toggle
         $('body').on('change', '#js_patient_type', function () {
             if ($(this).val() === 'old') {
                 $('#new_patient').hide();
@@ -304,11 +339,25 @@
             }
         });
     }
-</script>
-<script>
+
     function submitAppointmentForm() {
         const form = document.getElementById("appointment-form");
         const formData = new FormData(form);
+        const dateInput = document.getElementById("datepicker").value;
+
+        if (!dateInput) {
+            showSwal("Please select an appointment date.", "error");
+            return;
+        }
+
+        const selectedDate = new Date(dateInput);
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        if (selectedDate < today) {
+            showSwal("You cannot select a past date for your appointment.", "error");
+            return;
+        }
 
         fetch("{% url 'book_appointment' %}", {
             method: "POST",
@@ -317,12 +366,19 @@
             },
             body: formData
         })
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error("Network response was not OK");
+                }
+                return response.json();
+            })
             .then(data => {
                 if (data.status === "success") {
-                    showSwal(data.message || "Appointment booked successfully!");
-                    form.reset();
-                    goToStep('step3', 'step1');
+                    showSwal(data.message || "Appointment booked successfully!", "success")
+                        .then(() => {
+                            form.reset();
+                            goToStep('step3', 'step1');
+                        });
                 } else {
                     showSwal(data.message || "Something went wrong.", "error");
                 }
