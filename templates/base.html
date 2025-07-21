@@ -190,26 +190,27 @@
 
     <script>
         function showSwal(message, type = 'success') {
-        const title = type === 'success' ? 'Success' : 'Error';
+            const title = type === 'success' ? 'Success' : 'Error';
 
-        Swal.fire({
-            title: title,
-            text: message,
-            icon: type,
-            confirmButtonColor: '#3085d6',
-            confirmButtonText: 'OK'
-        });
-    }
+            Swal.fire({
+                title: title,
+                text: message,
+                icon: type,
+                confirmButtonColor: '#3085d6',
+                confirmButtonText: 'OK'
+            });
+        }
 
-        window.onload = function () {
-            setTimeout(() => {
-                document.getElementById("preloader").style.opacity = "0";
+        window.addEventListener('load', function () {
+            const loader = document.getElementById('preloader');
+            if (loader) {
+                loader.style.opacity = '0';
                 setTimeout(() => {
                     document.getElementById("preloader").style.display = "none";
-                    document.getElementById("content").style.display = "block";
-                }, 500); // Smooth fade-out
-            }, 1000); // GIF shows for 1.5 seconds
-        };
+                    document.getElementById("content").style.display = "block";                
+                }, 500); // Matches the transition duration
+            }
+        });
     </script>
     {% endblock %}
 

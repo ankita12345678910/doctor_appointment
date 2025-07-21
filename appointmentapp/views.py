@@ -29,8 +29,8 @@ def aboutUs(request):
     return render(request, "home/about_us.html")
 
 
-def testHome(request):
-    return render(request, "home/test_home.html")
+def test(request):
+    return render(request, "test.html")
 
 
 # login Actions
@@ -366,7 +366,8 @@ def manageDoctorSpecializations(request):
     try:
         specializations = DoctorSpecializations.objects.filter(
             status='Active').order_by('-created_at')
-        doctors = User.objects.filter(details__status='Active', details__role='Role_Doctor', is_active=True)
+        doctors = User.objects.filter(
+            details__status='Active', details__role='Role_Doctor', is_active=True)
     except Exception as e:
         messages.error(request, f'Error: {str(e)}')
     return render(request, 'admin/manage_doctor_specializations.html', {
@@ -378,38 +379,31 @@ def manageDoctorSpecializations(request):
 
 @login_required
 @require_POST
-def addSpecializations(request):
-    try:
-        if request.method == 'POST':
-            DoctorSpecializations.objects.create(
-                name=request.POST.get('name'),
-                description=request.POST.get('description'),
-                serviceLogo=request.FILES.get(
-                    'logo')  # handle file upload here
-            )
-            messages.success(request, 'Specialization added successfully!')
-    except Exception as e:
-        messages.error(request, f'Error: {str(e)}')
+def saveSpecialization(request):
+    if request.method == 'POST':
+        try:
+            specialization_id = request.POST.get('specialization_id')
 
-    return redirect('manage_doctor_specializations')
+            # Check if this is an edit operation
+            if specialization_id and specialization_id != "-1":
+                specialization = get_object_or_404(DoctorSpecializations, id=specialization_id)
+                specialization.name = request.POST.get('name')
+                specialization.description = request.POST.get('description')
+                if 'logo' in request.FILES:
+                    specialization.serviceLogo = request.FILES.get('logo')
+                specialization.save()
+                messages.success(request, 'Specialization updated successfully!')
+            else:
+                # Add new specialization
+                DoctorSpecializations.objects.create(
+                    name=request.POST.get('name'),
+                    description=request.POST.get('description'),
+                    serviceLogo=request.FILES.get('logo') if 'logo' in request.FILES else None
+                )
+                messages.success(request, 'Specialization added successfully!')
 
-
-@login_required
-@require_POST
-def editSpecialization(request, id):
-    try:
-        specialization = get_object_or_404(DoctorSpecializations, id=id)
-
-        if request.method == 'POST':
-            specialization.name = request.POST.get('name')
-            specialization.description = request.POST.get('description')
-
-            if 'logo' in request.FILES:
-                specialization.serviceLogo = request.FILES.get('logo')
-            specialization.save()
-            messages.success(request, 'Specialization Updated SUccessfully!')
-    except Exception as e:
-        messages.error(request, f'Error: {str(e)}')
+        except Exception as e:
+            messages.error(request, f'Error: {str(e)}')
 
     return redirect('manage_doctor_specializations')
 
@@ -499,6 +493,7 @@ def deleteDoctor(request, id):
     except Exception as e:
         messages.error(request, f'Error: {str(e)}')
     return redirect('manage_doctors')
+
 
 @login_required
 @require_POST

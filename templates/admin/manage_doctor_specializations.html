@@ -3,17 +3,17 @@
 
 {% block headInclude %}
 {{ block.super }}
-<!-- Mobiscroll CSS -->
-<link rel="stylesheet" href="https://cdn.mobiscroll.com/5.27.2/css/mobiscroll.min.css" />
-
-<!-- Mobiscroll JS -->
-<script src="https://cdn.mobiscroll.com/5.27.2/js/mobiscroll.min.js"></script>
-
+<!-- Choices.js CSS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css" />
+<style>
+  .choices__inner {
+    min-height: 45px;
+  }
+</style>
 {% endblock %}
 
 {% block content %}
 
-<body>
   <div class="container py-4">
     <!-- Add Button -->
     <div class="d-flex justify-content-end mb-3">
@@ -83,49 +83,45 @@
   </div>
 
   <!-- Specialization Modal -->
-  <div class="modal fade" id="specializationModal" tabindex="-1" aria-labelledby="specializationModalLabel"
-    aria-hidden="true">
-    <div class="modal-dialog">
-      <form method="POST" id="specializationForm" action="{% url 'add_specializations' %}"
-        enctype="multipart/form-data">
-        {% csrf_token %}
-        <input type="hidden" name="id" id="specializationId">
-        <div class="modal-content">
-          <div class="modal-header" style="background-color: #005c62;">
-            <h5 class="modal-title text-white" id="modalTitle">Add Specialization</h5>
-            <button type="button" class="btn-close" style="filter: invert(1);" data-bs-dismiss="modal"
-              aria-label="Close"></button>
-          </div>
+  <div class="modal fade" id="specializationModal" tabindex="-1" aria-labelledby="specializationModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+          <form method="post" enctype="multipart/form-data" id="specializationForm" action="{% url 'save_specialization' %}">
+              {% csrf_token %}
+              <input type="hidden" name="specialization_id" id="specializationId" value="-1">
+              <div class="modal-content">
+                  <div class="modal-header" style="background-color: #005c62;">
+                      <h5 class="modal-title text-white" id="modalTitle">Add Specialization</h5>
+                      <button type="button" class="btn-close" style="filter: invert(1);" data-bs-dismiss="modal" aria-label="Close"></button>
+                  </div>
 
-          <!-- Logo Preview & Upload Trigger -->
-          <div class="d-flex justify-content-center mt-3 position-relative">
-            <label for="specializationLogo" class="cursor-pointer">
-              <img id="logoPreview" src="{% static 'images/default_spec_logo.png' %}" alt="Specialization Logo"
-                class="rounded-circle border"
-                style="width: 100px; height: 100px; object-fit: cover; cursor: pointer; margin-right: 25px;">
-            </label>
-            <input type="file" id="specializationLogo" name="logo" style="margin-top: 35px;" accept="image/*" required>
-          </div>
+                  <!-- Logo Preview & Upload Trigger -->
+                  <div class="d-flex justify-content-center mt-3 position-relative">
+                      <label for="specializationLogo" class="cursor-pointer">
+                          <img id="logoPreview" src="{% static 'images/default_spec_logo.png' %}" alt="Specialization Logo" class="rounded-circle border" style="width: 100px; height: 100px; object-fit: cover; cursor: pointer; margin-right: 25px;">
+                      </label>
+                      <input type="file" id="specializationLogo" name="logo" style="margin-top: 35px;" accept="image/*" required>
+                  </div>
 
-          <div class="modal-body">
-            <div class="mb-3">
-              <label for="specializationName" class="form-label">Name</label>
-              <input type="text" class="form-control" id="specializationName" name="name" required>
-            </div>
-            <div class="mb-3">
-              <label for="specializationDescription" class="form-label">Description</label>
-              <textarea class="form-control" id="specializationDescription" name="description"></textarea>
-            </div>
-          </div>
+                  <div class="modal-body">
+                      <div class="mb-3">
+                          <label for="specializationName" class="form-label">Name</label>
+                          <input type="text" class="form-control" id="specializationName" name="name" required>
+                      </div>
+                      <div class="mb-3">
+                          <label for="specializationDescription" class="form-label">Description</label>
+                          <textarea class="form-control" id="specializationDescription" name="description"></textarea>
+                      </div>
+                  </div>
 
-          <div class="modal-footer">
-            <button type="submit" class="btn btn-success" style="background-color: #005c62;">Save</button>
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-          </div>
-        </div>
-      </form>
-    </div>
+                  <div class="modal-footer">
+                      <button type="submit" class="btn btn-success" style="background-color: #005c62;">Save</button>
+                      <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                  </div>
+              </div>
+          </form>
+      </div>
   </div>
+
 
   <!-- Assign Doctors -->
   <div class="modal fade" id="assignDoctorsModal" tabindex="-1" aria-labelledby="assignDoctorsLabel" aria-hidden="true">
@@ -146,115 +142,114 @@
             </div>
             <!-- Multi-select dropdown for doctors -->
             <div class="mb-3">
-              <label for="doctorSelect" class="form-label"></label>
-              <label>Select Multiple Doctors
-                <input mbsc-input id="my-input" data-dropdown="true" data-tags="true" />
-              </label>
-
-              <select id="doctorSelect" name="doctor_ids" class="form-select" multiple size="6" required>
-                {% for doctor in doctors %}
-                <option value="{{ doctor.id }}">{{ doctor.first_name }} {{doctor.last_name}}</option>
-                {% endfor %}
-              </select>
-              <div class="form-text">Hold Ctrl (Cmd on Mac) to select multiple doctors</div>
-            </div>
-            <div>
-              <label>
-                Multi-select
-                <input mbsc-input id="my-input" data-dropdown="true" data-tags="true" />
-              </label>
-              <select id="multiple-select" multiple>
-                <option value="1">Books</option>
-                <option value="2">Movies, Music & Games</option>
-                <option value="3">Electronics & Computers</option>
-                <option value="4">Home, Garden & Tools</option>
-                <option value="5">Health & Beauty</option>
-                <option value="6">Toys, Kids & Baby</option>
-                <option value="7">Clothing & Jewelry</option>
-                <option value="8">Sports & Outdoors</option>
+              <label for="doctors" class="form-label">Select Doctors</label>
+              <select id="doctors" name="doctors" class="form-select" multiple size="5">
+                  {% for doctor in doctors %}
+                      <option value="{{ doctor.id }}">{{ doctor.get_full_name }}</option>
+                  {% endfor %}
               </select>
             </div>
+            <div class="modal-footer">
+              <button type="submit" class="btn btn-primary">Assign Doctors</button>
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+            </div>
           </div>
-          <div class="modal-footer">
-            <button type="submit" class="btn btn-primary">Assign Doctors</button>
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-          </div>
-        </div>
       </form>
     </div>
   </div>
-
-</body>
-
 {% endblock %}
 
 {% block javascript %}
-{{ block.super }}
-<script>
-  $('#doctorSelect').mobiscroll().select({
-    inputElement: document.getElementById('my-input'),
-    touchUi: false
-  });
+  {{ block.super }}
+  <!-- Bootstrap JS Bundle -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
-  mobiscroll.select('#multiple-select', {
-    inputElement: document.getElementById('my-input'),
-    touchUi: false
-  });
-  document.getElementById("specializationLogo").addEventListener("change", function (event) {
-    const file = event.target.files[0];
-    const preview = document.getElementById("logoPreview");
-    if (file) {
-      preview.src = URL.createObjectURL(file);
-    }
-  });
+  <!-- Choices.js -->
+  <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
+  <script>
+    {% if messages %}
+        {% for message in messages %}
+            showSwal("{{ message }}", "{{ message.tags }}");
+        {% endfor %}
+      {% endif %}
+    // Initialize Choices.js on select
+    /*const choices = new Choices('#doctors', {
+        removeItemButton: true,
+        shouldSort: false,
+        placeholder: true,
+        placeholderValue: 'Select doctors',
+        searchEnabled: false,
+    });
 
-  // ADD BUTTON
-  document.getElementById('addSpecializationBtn').addEventListener('click', () => {
-    const modalEl = document.getElementById('specializationModal');
-    const modal = new bootstrap.Modal(modalEl);
-    document.getElementById('modalTitle').textContent = 'Add Specialization';
-    document.getElementById('specializationForm').action = "{% url 'add_specializations' %}";
-    document.getElementById('specializationId').value = '';
-    document.getElementById('specializationName').value = '';
-    document.getElementById('specializationDescription').value = '';
-    const logoPreview = document.getElementById("logoPreview");
-    const logoInput = document.getElementById("specializationLogo");
-    logoPreview.src = "/static/images/default_spec_logo.png";
-    logoInput.value = "";
-    logoInput.removeAttribute("hidden");
-    logoInput.setAttribute("required", "required");
-    modal.show();
-  });
+    // Get selected values
+    function getSelected() {
+      const selected = choices.getValue(true); // true returns an array of values
+      alert("You selected: " + selected.join(", "));
+    }*/
 
-  // EDIT BUTTONS
-  function editSpecialization(id, name, description, logoUrl) {
-    // Set values in form
-    document.getElementById("specializationId").value = id;
-    document.getElementById("specializationName").value = name;
-    document.getElementById("specializationDescription").value = description;
+    document.getElementById("specializationLogo").addEventListener("change", function (event) {
+      const file = event.target.files[0];
+      const preview = document.getElementById("logoPreview");
+      if (file) {
+        preview.src = URL.createObjectURL(file);
+      }
+    });
 
-    const logoPreview = document.getElementById("logoPreview");
-    const logoInput = document.getElementById("specializationLogo");
-    if (logoUrl) {
-      console.log(logoUrl);
-      logoPreview.src = logoUrl;
-      logoInput.removeAttribute("required");
-      logoInput.setAttribute("hidden", true);
-    } else {
-      logoPreview.src = "/static/images/default_spec_logo.png";
-      logoInput.setAttribute("required", "required");
-      logoInput.value = "";
+    // Resetting logic
+    const specializationModal = document.getElementById('specializationModal');
+    specializationModal.addEventListener('hidden.bs.modal', function () {
+        const form = document.getElementById('specializationForm');
+        form.reset(); // Reset form fields
+        document.getElementById("logoPreview").src = "{% static 'images/default_spec_logo.png' %}"; // Reset image preview
+    });
+
+    // ADD BUTTON
+    document.getElementById('addSpecializationBtn').addEventListener('click', () => {
+      const modal = new bootstrap.Modal(specializationModal);
+      document.getElementById('modalTitle').textContent = 'Add Specialization';
+      document.getElementById('specializationForm').action = "{% url 'save_specialization' %}";
+      document.getElementById('specializationId').value = '-1'; // not empty string
+      document.getElementById('specializationName').value = '';
+      document.getElementById('specializationDescription').value = '';
+      //const logoPreview = document.getElementById("logoPreview");
+      const logoInput = document.getElementById("specializationLogo");
+      /*logoPreview.src = "{% static 'images/default_spec_logo.png' %}";
+      logoInput.value = "";*/
       logoInput.removeAttribute("hidden");
+      logoInput.setAttribute("required", "required");
+      modal.show();
+    });
+
+    // EDIT BUTTONS
+    function editSpecialization(id, name, description, logoUrl) {
+      // Set values in form
+      document.getElementById("specializationId").value = id;
+      document.getElementById("specializationName").value = name;
+      document.getElementById("specializationDescription").value = description;
+
+      const logoPreview = document.getElementById("logoPreview");
+      const logoInput = document.getElementById("specializationLogo");
+      if (logoUrl) {
+        console.log(logoUrl);
+        logoPreview.src = logoUrl;
+        logoInput.removeAttribute("required");
+        logoInput.setAttribute("hidden", true);
+      } else {
+        logoPreview.src = "/static/images/default_spec_logo.png";
+        logoInput.setAttribute("required", "required");
+        logoInput.value = "";
+        logoInput.removeAttribute("hidden");
+      }
+      const form = document.getElementById("specializationForm");
+      form.action = `{% url 'save_specialization' %}`;
+
+      // Optional: change modal title
+      document.getElementById("modalTitle").innerText = "Edit Specialization";
+     
     }
-    const form = document.getElementById("specializationForm");
-    form.action = `/edit/specializations/${id}/`;
 
-    // Optional: change modal title
-    document.getElementById("modalTitle").innerText = "Edit Specialization";
-  }
-
-  var assignDoctorsModal = document.getElementById('assignDoctorsModal');
-  assignDoctorsModal.addEventListener('show.bs.modal', function (event) {
+    var assignDoctorsModal = document.getElementById('assignDoctorsModal');
+    assignDoctorsModal.addEventListener('show.bs.modal', function (event) {
     var button = event.relatedTarget; // Button that triggered the modal
     var specializationId = button.getAttribute('data-specialization-id');
     var specializationName = button.getAttribute('data-specialization-name');
@@ -266,10 +261,10 @@
     inputSpecName.value = specializationName;
     inputSpecId.value = specializationId;
 
-    // Optionally clear previous selections
-    var selectDoctors = assignDoctorsModal.querySelector('#doctorSelect');
-    selectDoctors.selectedIndex = -1; // clears all selected options
-  });
-</script>
-
+      // Optionally clear previous selections
+      var selectDoctors = assignDoctorsModal.querySelector('#doctorSelect');
+      selectDoctors.selectedIndex = -1; // clears all selected options
+    });
+  </script>
 {% endblock %}
+

@@ -13,7 +13,7 @@ urlpatterns = [
     # path('contact/us', views.contactUs, name='contact_us'),
     # path('services', views.services, name='services'),
     # path('contact', views.contactUs, name='contact_us'),
-    # path('test/home/', views.testHome, name='test_home'),
+    path('test/', views.test, name='test'),
 
 
     # Common URL
@@ -30,10 +30,9 @@ urlpatterns = [
     # Admin URL
     path('dashboard/', views.adminDashboard, name='admin_dashboard'), 
     path('manage/doctor/specializations/', views.manageDoctorSpecializations, name='manage_doctor_specializations'),
-    path('add/specializations/', views.addSpecializations, name='add_specializations'),
-    path('edit/specializations/<int:id>/', views.editSpecialization, name='edit_specializations'),
     path('delete/specialization/<int:id>/', views.deleteSpecialization, name='delete_specializations'),
     path('assign/doctors/', views.assignDoctors, name='assign_doctors'),
+    path('save/specialization', views.saveSpecialization, name='save_specialization'),
 
     path('manage/doctors', views.manageDoctors, name="manage_doctors"),
     path('add/doctors', views.addDoctors, name='add_doctors'),
