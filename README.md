@@ -75,7 +75,7 @@ pip install -r requirements.txt
 ### 3. Setup .env file
 
 ```bash
-cp .env.example .env  # Then edit .env with your DB credentials
+cp .env  # Then edit .env with your DB credentials
 ```
 
 ### 4. Create the database
