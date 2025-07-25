@@ -25,8 +25,6 @@ Appoint Me is a modern and responsive doctor appointment system built using Djan
 | Database    | MySQL                                                           |
 | Templates   | Django Templates with `{% block %}` / `{% include %}` structure |
 | Environment | python-dotenv for config                                        |
-| Deployment  | WSGI compatible (Gunicorn/Nginx ready)                          |
-
 ---
 
 **Project Structure**
@@ -39,7 +37,10 @@ doctor_appointment/
 ├── static/                # Static files (CSS, JS, images)
 ├── media/                 # Uploaded files (e.g. doctor profile photos)
 ├── .env                   # Environment variables (not pushed to Git)
+└── README.md
 └── manage.py
+└── requirements.txt      # For setting up the project 
+
 ```
 
 ---
@@ -62,8 +63,8 @@ DB_PORT=3306
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/yourusername/appoint-me.git
-cd appoint-me
+git clone https://github.com/ankita12345678910/doctor_appointment.git
+cd doctor_appointment
 ```
 
 ### 2. Install dependencies
@@ -84,16 +85,16 @@ touch .env  # Then edit .env with your DB credentials
 CREATE DATABASE appointmedb;
 ```
 
-### 5. Run migrations
-
-```bash
-python manage.py migrate
-```
-
-### 6. Seed the admin user
+### 5. Seed the admin user
 
 ```bash
 python manage.py seed_admin
+```
+
+### 6. Run migrations
+
+```bash
+python manage.py migrate
 ```
 
 Use these credentials to login as Admin:
@@ -109,6 +110,5 @@ python manage.py runserver
 
 ### Access the app
 
-Visit [http://127.0.0.1:8000/] in your browser
+Visit http://127.0.0.1:8000/ in your browser
 
----
