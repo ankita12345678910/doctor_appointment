@@ -72,10 +72,10 @@ cd appoint-me
 pip install -r requirements.txt
 ```
 
-### 3. Setup .env file
+### 3. Set up .env file
 
 ```bash
-cp .env  # Then edit .env with your DB credentials
+touch .env  # Then edit .env with your DB credentials
 ```
 
 ### 4. Create the database
@@ -109,6 +109,6 @@ python manage.py runserver
 
 ### Access the app
 
-Visit [http://127.0.0.1:8000/](http://127.0.0.1:8000/) in your browser
+Visit [http://127.0.0.1:8000/] in your browser
 
 ---
