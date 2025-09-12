@@ -299,17 +299,17 @@ def ajaxFetchAppointment(request):
 
         with connection.cursor() as cursor:
             cursor.execute('''
-                SELECT 
+                SELECT
                     u.id AS user_id,
-                    u.patient_id, 
-                    CONCAT(u.first_name, ' ', u.last_name) AS fullname, 
-                    u.phone_number AS mobile, 
-                    pa.appointment_date, 
-                    pa.appointment_time 
-                FROM auth_user u 
-                INNER JOIN patient_book_appointment pa 
-                ON pa.patient_id = u.id 
-                WHERE u.phone_number = %s 
+                    u.patient_id,
+                    CONCAT(u.first_name, ' ', u.last_name) AS fullname,
+                    u.phone_number AS mobile,
+                    pa.appointment_date,
+                    pa.appointment_time
+                FROM auth_user u
+                INNER JOIN patient_book_appointment pa
+                ON pa.patient_id = u.id
+                WHERE u.phone_number = %s
                 AND pa.appointment_date = %s
             ''', [mobile, appointment_date])
 
@@ -387,30 +387,32 @@ def manageDoctorSpecializations(request):
 @login_required
 @require_POST
 def saveSpecialization(request):
-    if request.method == 'POST':
-        try:
+    try:
+        if request.method == 'POST':
             specialization_id = request.POST.get('specialization_id')
 
-            # Check if this is an edit operation
+            # Check if id is exists then call edit operation
             if specialization_id and specialization_id != "-1":
-                specialization = get_object_or_404(DoctorSpecializations, id=specialization_id)
+                specialization = get_object_or_404(
+                    DoctorSpecializations, id=specialization_id)
                 specialization.name = request.POST.get('name')
                 specialization.description = request.POST.get('description')
                 if 'logo' in request.FILES:
                     specialization.serviceLogo = request.FILES.get('logo')
                 specialization.save()
-                messages.success(request, 'Specialization updated successfully!')
+                messages.success(
+                    request, 'Specialization updated successfully!')
             else:
                 # Add new specialization
                 DoctorSpecializations.objects.create(
                     name=request.POST.get('name'),
                     description=request.POST.get('description'),
-                    serviceLogo=request.FILES.get('logo') if 'logo' in request.FILES else None
+                    serviceLogo=request.FILES.get(
+                        'logo') if 'logo' in request.FILES else None
                 )
                 messages.success(request, 'Specialization added successfully!')
-
-        except Exception as e:
-            messages.error(request, f'Error: {str(e)}')
+    except Exception as e:
+        messages.error(request, f'Error: {str(e)}')
 
     return redirect('manage_doctor_specializations')
 
@@ -433,16 +435,25 @@ def deleteSpecialization(request, id):
 @login_required
 def manageDoctors(request):
     try:
+        # Fetching active specializations and ordering by 'created_at'
         specializations = DoctorSpecializations.objects.filter(
             status='Active').order_by('-created_at')
-        doctors = User.objects.filter(details__status='Active', is_active=True).select_related(
-            'details')  # Use lowercase related model name
+
+        # Fetching active doctors (users with the role 'Role_Doctor') and ordering by 'date_joined'
+        doctors = User.objects.filter(
+            details__status='Active',
+            details__role='Role_Doctor',
+            is_active=True
+        ).select_related('details').order_by('-date_joined')
+
     except Exception as e:
+        # If any exception occurs, show an error message
         messages.error(request, f'Error: {str(e)}')
+
     return render(request, 'admin/manage_doctors.html', {
         'title': 'Manage Doctors',
-        'specializations': specializations if specializations else "",
-        'doctors': doctors,
+        'specializations': specializations if specializations else [],
+        'doctors': doctors if doctors else [],
     })
 
 
@@ -451,37 +462,108 @@ def manageDoctors(request):
 def addDoctors(request):
     try:
         if request.method == 'POST':
-            first_name = request.POST.get("first_name")
-            last_name = request.POST.get("last_name")
-            username = request.POST.get("first_name")
-            email = request.POST.get("email")
-            password = request.POST.get("phone_number")
+            doctor_id = request.POST.get('doctor_id')
 
-            # Check if email already exists
-            if User.objects.filter(email=email).exists():
-                return render(request, "admin/manage_doctors.html", {"error": "Email already registered!"})
+            if doctor_id and doctor_id != '-1':
+                # Fetch the existing doctor user by ID
+                doctor = get_object_or_404(User, id=doctor_id)
 
-            # Create User object
-            user = User.objects.create(
-                first_name=first_name,
-                last_name=last_name,
-                username=username,
-                email=email,
-                password=make_password(password),  # Hash the password
-            )
+                # Fetch and update doctor details
+                first_name = request.POST.get("first_name")
+                last_name = request.POST.get("last_name")
+                # Assuming username is based on first name
+                username = request.POST.get("first_name")
+                email = request.POST.get("email")
+                phone_number = request.POST.get("phone_number")
+                gender = request.POST.get('gender')
+                address = request.POST.get('address')
 
-            # Create UserProfile object
-            UserDetails.objects.create(
-                user=user,
-                role='Role_Doctor',  # EnumField stores the selected role
-                gender=request.POST.get('gender'),
-                address=request.POST.get('address'),
-                phone_number=request.POST.get('phone_number'),
-                status='Active',
-            )
+                # Check if email already exists (but not for the current doctor)
+                if User.objects.filter(email=email).exclude(id=doctor.id).exists():
+                    messages.error(request, "Email already registered!")
+                    return redirect('manage_doctors')
+
+                # Update the doctor's details (excluding the password for now)
+                doctor.first_name = first_name
+                doctor.last_name = last_name
+                doctor.username = username
+                doctor.email = email
+
+                # Only update password if provided (assuming the user didn't want to update the password)
+                new_password = request.POST.get("password")
+                if new_password:
+                    doctor.password = make_password(
+                        new_password)  # Hash the new password
+
+                # Save the changes to the doctor user
+                doctor.save()
+
+                # Update the associated UserDetails profile
+                user_profile = doctor.details
+                user_profile.gender = gender
+                user_profile.address = address
+                user_profile.phone_number = phone_number
+                user_profile.status = 'Active'  # or whatever status you need
+                user_profile.save()
+
+                # Update the doctor’s specializations (many-to-many)
+                specialization_ids = request.POST.getlist('specializations')
+                specializations = DoctorSpecializations.objects.filter(
+                    id__in=specialization_ids)
+                # Update the many-to-many relation
+                doctor.specializations.set(specializations)
+
+                doctor.save()
+
+                # Success message
+                messages.success(request, "Doctor updated successfully!")
+                return redirect('manage_doctors')
+            else:
+                first_name = request.POST.get("first_name")
+                last_name = request.POST.get("last_name")
+                username = request.POST.get("first_name")
+                email = request.POST.get("email")
+                password = request.POST.get("phone_number")
+                gender = request.POST.get('gender')
+                print(gender)
+
+                # Check if email already exists
+                if User.objects.filter(email=email).exists():
+                    messages.error(request, "Email already registered!")
+
+                # Create User object
+                doctor = User.objects.create(
+                    first_name=first_name,
+                    last_name=last_name,
+                    username=username,
+                    email=email,
+                    password=make_password(password),  # Hash the password
+                )
+
+                # Create UserProfile object
+                UserDetails.objects.create(
+                    user=doctor,
+                    role='Role_Doctor',  # EnumField stores the selected role
+                    gender=request.POST.get('gender'),
+                    address=request.POST.get('address'),
+                    phone_number=request.POST.get('phone_number'),
+                    status='Active',
+                )
+                specialization_ids = request.POST.getlist(
+                    'specializations')  # This returns a list of IDs
+                specialization_ids = [
+                    sid for sid in specialization_ids if sid and sid != '']
+
+                # Ensure the specialization IDs are valid (i.e., integers and not empty)
+                if specialization_ids:
+                    # Assign the specializations to the doctor (user)
+                    specializations = DoctorSpecializations.objects.filter(
+                        id__in=specialization_ids)
+                    # This will automatically update the junction table
+                    doctor.specializations.set(specializations)
+                    doctor.save()
             messages.success(request, 'Doctors Added Successfully!')
-        else:
-            messages.success(request, 'Something went Wrong')
+            return redirect('manage_doctors')
     except Exception as e:
         messages.error(request, f'Error: {str(e)}')
     return redirect('manage_doctors')

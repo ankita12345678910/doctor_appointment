@@ -52,16 +52,16 @@
                     )">
                     <i class="bi bi-pencil-square"></i>
                   </button>
-                  <!-- Assign Doctors Button -->
+                  <!-- Assign Doctors Button 
                   <button type="button" class="btn btn-outline-primary btn-sm d-flex align-items-center gap-1"
                     data-bs-toggle="modal" data-bs-target="#assignDoctorsModal"
                     data-specialization-id="{{ specialization.id }}"
                     data-specialization-name="{{ specialization.name }}" title="Assign Doctors">
                     <i class="bi bi-person-plus-fill"></i>
-                  </button>
+                  </button>-->
                   <!-- Delete Button -->
                   <form action="{% url 'delete_specializations' specialization.id %}" method="post" class="d-inline"
-                    onsubmit="return confirm('Are you want to delete this Specialization?');">
+                    onsubmit="return confirm('Are you want to remove this Specialization?');">
                     {% csrf_token %}
                     <button type="submit" class="btn btn-link text-secondary p-0 m-0 remove-cross"
                       style="font-size: 1rem;" title="Remove">
@@ -97,18 +97,18 @@
                   <!-- Logo Preview & Upload Trigger -->
                   <div class="d-flex justify-content-center mt-3 position-relative">
                       <label for="specializationLogo" class="cursor-pointer">
-                          <img id="logoPreview" src="{% static 'images/default_spec_logo.png' %}" alt="Specialization Logo" class="rounded-circle border" style="width: 100px; height: 100px; object-fit: cover; cursor: pointer; margin-right: 25px;">
+                        <img id="logoPreview" src="{% static 'images/default_spec_logo.png' %}" alt="Specialization Logo" class="rounded-circle border" style="width: 100px; height: 100px; object-fit: cover; cursor: pointer; margin-right: 25px;">
                       </label>
                       <input type="file" id="specializationLogo" name="logo" style="margin-top: 35px;" accept="image/*" required>
                   </div>
 
                   <div class="modal-body">
                       <div class="mb-3">
-                          <label for="specializationName" class="form-label">Name</label>
+                          <label for="specializationName" class="form-label">Name<span class="text-danger">*</span></label>
                           <input type="text" class="form-control" id="specializationName" name="name" required>
                       </div>
                       <div class="mb-3">
-                          <label for="specializationDescription" class="form-label">Description</label>
+                          <label for="specializationDescription" class="form-label">Description<span class="text-danger">*</span></label>
                           <textarea class="form-control" id="specializationDescription" name="description"></textarea>
                       </div>
                   </div>
@@ -209,12 +209,7 @@
       document.getElementById('modalTitle').textContent = 'Add Specialization';
       document.getElementById('specializationForm').action = "{% url 'save_specialization' %}";
       document.getElementById('specializationId').value = '-1'; // not empty string
-      document.getElementById('specializationName').value = '';
-      document.getElementById('specializationDescription').value = '';
-      //const logoPreview = document.getElementById("logoPreview");
       const logoInput = document.getElementById("specializationLogo");
-      /*logoPreview.src = "{% static 'images/default_spec_logo.png' %}";
-      logoInput.value = "";*/
       logoInput.removeAttribute("hidden");
       logoInput.setAttribute("required", "required");
       modal.show();
