@@ -525,7 +525,6 @@ def addDoctors(request):
                 email = request.POST.get("email")
                 password = request.POST.get("phone_number")
                 gender = request.POST.get('gender')
-                print(gender)
 
                 # Check if email already exists
                 if User.objects.filter(email=email).exists():
